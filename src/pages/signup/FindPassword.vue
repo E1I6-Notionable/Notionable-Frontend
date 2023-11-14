@@ -1,6 +1,6 @@
 <template>
   <div class="signup-page">
-    <div class="q-flex-column q-items-center" style="margin-bottom: 83px">
+    <div class="q-flex-column q-items-center">
       <img src="/logo.png" style="width: 180px" />
     </div>
     <div class="container">
