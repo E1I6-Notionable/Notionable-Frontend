@@ -6,11 +6,19 @@ const routes = [
       { path: '', component: () => import('pages/IndexPage.vue') },
       {
         path: 'signup',
-        component: () => import('pages/user/SignupPage.vue'),
+        component: () => import('pages/signup/SignupPage.vue'),
       },
       {
         path: 'signup/next',
-        component: () => import('pages/user/SignupPageNext.vue'),
+        component: () => import('pages/signup/SignupPageNext.vue'),
+      },
+      {
+        path: 'signupsuccess',
+        component: () => import('pages/signup/SignUpSuccess.vue'),
+      },
+      {
+        path: 'findpassword',
+        component: () => import('pages/signup/FindPassword.vue'),
       },
     ],
   },

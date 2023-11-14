@@ -59,7 +59,9 @@
           <span>(필수)</span>
         </div>
         <div class="signup-btn">
-          <span>누르면 가입완료!</span>
+          <router-link to="/signupsuccess">
+            <span>누르면 가입완료!</span></router-link
+          >
         </div>
       </div>
     </div>
@@ -92,7 +94,7 @@ export default {
 
 .signup-container {
   border: 1px solid #e4e5ec;
-  margin-top: 3em;
+  margin-top: 4em;
   border-radius: 12px;
   padding: 0 5em;
   position: relative;
@@ -191,7 +193,7 @@ input:focus {
 .password-input > span {
   position: absolute;
   right: 15px;
-  top: 10px;
+  top: 30%;
 }
 
 .password-cofirm {
@@ -241,5 +243,15 @@ input:focus {
   border-radius: 8px;
   margin: 2em 0 4em 0;
   cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:link,
+a:active,
+a:visited {
+  color: white;
 }
 </style>

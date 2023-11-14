@@ -41,7 +41,7 @@ export default {
 
 .signup-container {
   border: 1px solid #e4e5ec;
-  margin-top: 3em;
+  margin-top: 4em;
   border-radius: 12px;
   padding: 0 5em;
 }
