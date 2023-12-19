@@ -1,7 +1,11 @@
 <template>
   <div class="signup-page">
     <div class="q-flex-column q-items-center">
-      <img src="/logo.png" style="width: 180px" />
+      <img
+        src="/img/logo.png"
+        style="width: 180px; cursor: pointer"
+        @click="toHome"
+      />
     </div>
     <div class="container">
       <p class="container-title">비밀번호 찾기</p>
@@ -43,7 +47,23 @@
   </div>
 </template>
 
-<script setup></script>
+<script>
+import { useRouter } from 'vue-router';
+
+export default {
+  setup() {
+    const router = useRouter();
+
+    const toHome = () => {
+      router.push({ name: 'Home' });
+    };
+
+    return {
+      toHome,
+    };
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 @import 'src/css/app.scss';
