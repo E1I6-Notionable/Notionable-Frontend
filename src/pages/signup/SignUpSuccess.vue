@@ -13,7 +13,7 @@
       </p>
     </div>
     <div class="q-pb-md q-items-center">
-      <img style="width: 600px" src="/signup_success.png" />
+      <img style="width: 600px" src="/img/signup_success.png" />
     </div>
     <div class="q-mt-lg q-flex-column q-items-center" style="margin-left: 20px">
       <q-btn
