@@ -40,6 +40,10 @@ const routes = [
         path: 'template',
         component: () => import('src/pages/template/TemplateDetailPage.vue'),
       },
+      {
+        path: 'apply-creator',
+        component: () => import('src/pages/user/ApplyCreator.vue'),
+      },
     ],
   },
   {
