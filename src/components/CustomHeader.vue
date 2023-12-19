@@ -5,7 +5,13 @@
         <img src="/img/logo_horizontal.png" />
       </router-link>
       <div class="search-container">
-        <input placeholder="원하시는 템플릿을 검색해보세요." />
+        <input
+          :placeholder="`원하시는 ${
+            page === 'template'
+              ? '템플릿을 검색해보세요.'
+              : '검색어를 입력하세요.'
+          }`"
+        />
         <img src="/img/icon/search.png" />
       </div>
       <div class="login-btn" v-if="!login">
@@ -20,10 +26,9 @@
           <span>서은</span>
           <span>님</span>
         </div>
-        <span class="apply-creator">크리에이터 신청✨</span>
       </div>
     </div>
-    <div class="nav">
+    <div v-if="page !== 'creator'" class="nav">
       <div>
         <router-link to="freetemplate">
           <div :class="{ 'nav-clicked': url.includes('freetemplate') }">
@@ -48,8 +53,13 @@
 <script>
 import { ref } from 'vue';
 export default {
+  props: {
+    page: {
+      type: String,
+    },
+  },
   setup() {
-    const login = ref(true);
+    const login = ref(false);
     const url = window.location.href;
 
     return {

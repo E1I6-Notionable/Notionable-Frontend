@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CustomHeader />
+    <CustomHeader page="template" />
     <div class="template-page">
       <div class="template-detail">
         <div class="template-img" />

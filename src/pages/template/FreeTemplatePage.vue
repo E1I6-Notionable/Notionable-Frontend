@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CustomHeader />
+    <CustomHeader page="template" />
     <div class="template-page">
       <TemplateCategory
         :categoryList="categoryList"
