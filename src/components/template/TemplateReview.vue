@@ -1,9 +1,6 @@
 <template>
   <div class="template-review-top">
-    <div class="review-write-btn">
-      <img src="/img/icon/pencil.png" />
-      <span>구매후기 작성하기</span>
-    </div>
+    <ReviewWriteBtn page="review" />
     <div class="template-satisfaction">
       <span>99%</span><span>의 구매자가 만족한 템플릿이에요</span>
     </div>
@@ -30,36 +27,18 @@
 </template>
 
 <script>
-export default {};
+import ReviewWriteBtn from './ReviewWriteBtn.vue';
+export default {
+  components: {
+    ReviewWriteBtn,
+  },
+};
 </script>
 
 <style>
 .template-review-top {
   margin-top: 1em;
   position: relative;
-}
-
-.review-write-btn {
-  background-color: #fafafc;
-  padding: 0.7em 1.4em;
-  display: flex;
-  border-radius: 30px;
-  cursor: pointer;
-  width: fit-content;
-  position: absolute;
-  top: 0.5em;
-  right: 0;
-}
-
-.review-write-btn img {
-  width: 17px;
-  height: 17px;
-  margin-right: 0.5em;
-}
-
-.review-write-btn span {
-  color: #313440;
-  font-weight: 600;
 }
 
 .template-satisfaction {

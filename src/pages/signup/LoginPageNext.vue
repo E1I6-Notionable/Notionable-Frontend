@@ -4,29 +4,22 @@
     <div class="signup-container">
       <p>이메일로 로그인하기</p>
       <div class="input-container">
-        <div>
-          <span>이메일</span>
-          <input
-            placeholder="이메일을 입력해주세요."
-            type="email"
-            v-model="emailText"
-          />
-        </div>
-        <div>
-          <span>비밀번호</span>
-          <div class="password-input">
-            <input
-              placeholder="비밀번호를 입력해주세요. (8자리 이상)"
-              :type="passwordView"
-              v-model="passwordText"
-            />
-            <img
-              src="/img/icon/password_icon.png"
-              alt="password_icon"
-              @click="controlPwView"
-            />
-          </div>
-        </div>
+        <CustomInput
+          name="이메일"
+          placeholder="이메일을 입력해주세요."
+          type="email"
+          v-model:value="emailText"
+          @update-value="updateEmail"
+          :icon="false"
+        />
+        <CustomInput
+          name="비밀번호"
+          placeholder="비밀번호를 입력해주세요. (8자리 이상)"
+          type="password"
+          v-model:value="passwordText"
+          @update-value="updatePassword"
+          :icon="true"
+        />
       </div>
       <div class="signup-btn" @click="login">
         <span>로그인하기</span>
@@ -49,29 +42,24 @@
 
 <script>
 import { ref } from 'vue';
-import axios from 'axios';
+import axios from 'src/axios';
 import { useRouter } from 'vue-router';
+import CustomInput from 'src/components/CustomInput.vue';
 export default {
   name: 'SignupPageNext',
+  components: {
+    CustomInput,
+  },
   setup() {
     const emailText = ref('');
     const passwordText = ref('');
-    const passwordView = ref('password');
     const router = useRouter();
-
-    const controlPwView = () => {
-      if (passwordView.value === 'password') {
-        passwordView.value = 'text';
-      } else {
-        passwordView.value = 'password';
-      }
-    };
 
     const login = async () => {
       try {
-        const res = await axios.post('/login/email', {
-          email: emailText,
-          password: passwordText,
+        const res = await axios.post('login/email', {
+          email: emailText.value,
+          password: passwordText.value,
         });
         console.log(res);
       } catch (err) {
@@ -83,13 +71,21 @@ export default {
       router.push({ name: 'Home' });
     };
 
+    const updateEmail = email => {
+      emailText.value = email;
+    };
+
+    const updatePassword = password => {
+      passwordText.value = password;
+    };
+
     return {
       emailText,
       passwordText,
-      passwordView,
-      controlPwView,
       login,
       toHome,
+      updateEmail,
+      updatePassword,
     };
   },
 };
@@ -127,49 +123,6 @@ export default {
   color: #737584;
   text-align: left;
   font-size: 1.1rem;
-}
-
-.input-container > div {
-  text-align: left;
-  margin-top: 1.5em;
-}
-
-.input-container > div > span {
-  color: #313440;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-input {
-  border: 1px solid #e4e5ec;
-  padding: 0.8em 0.9em;
-  border-radius: 6px;
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  font-size: 0.9rem;
-  margin: 0.4em 0 0 0;
-}
-
-input::placeholder {
-  color: #cacbd3;
-}
-
-input:focus {
-  outline: none;
-}
-
-.password-input {
-  position: relative;
-  height: fit-content;
-}
-
-.password-input img {
-  width: 17px;
-  position: absolute;
-  right: 15px;
-  top: 30%;
-  cursor: pointer;
 }
 
 .signup-btn {

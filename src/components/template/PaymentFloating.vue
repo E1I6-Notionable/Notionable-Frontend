@@ -29,10 +29,15 @@ export default {};
   align-items: center;
 }
 
+.template-author img {
+  width: 30px;
+}
+
 .template-author span {
   font-weight: 500;
   display: block;
   margin: 0 0 -0.3em 0.5em;
+  font-size: 0.9rem;
 }
 
 .template-floating p {

@@ -15,13 +15,13 @@
         <img src="/img/icon/search.png" />
       </div>
       <div class="login-btn" v-if="!login">
-        <router-link to="login"><span>로그인</span></router-link>
-        <router-link to="signup"><span>회원가입</span></router-link>
+        <router-link to="/login"><span>로그인</span></router-link>
+        <router-link to="/signup"><span>회원가입</span></router-link>
       </div>
       <div class="user-container" v-if="login">
-        <img class="basket-icon" src="/img/icon/basket.png" />
-        <span class="basket">장바구니</span>
-        <div class="user-btn">
+        <img @click="toCarts" class="basket-icon" src="/img/icon/basket.png" />
+        <span @click="toCarts" class="basket">장바구니</span>
+        <div class="user-btn" @click="toMypage">
           <img src="/img/icon/default-profile.png" />
           <span>서은</span>
           <span>님</span>
@@ -30,17 +30,17 @@
     </div>
     <div v-if="page !== 'creator'" class="nav">
       <div>
-        <router-link to="freetemplate">
+        <router-link to="/freetemplate">
           <div :class="{ 'nav-clicked': url.includes('freetemplate') }">
             무료 템플릿
           </div>
         </router-link>
-        <router-link to="paytemplate">
+        <router-link to="/paytemplate">
           <div :class="{ 'nav-clicked': url.includes('paytemplate') }">
             유료 템플릿
           </div>
         </router-link>
-        <router-link to="community">
+        <router-link to="/community">
           <div :class="{ 'nav-clicked': url.includes('community') }">
             커뮤니티
           </div>
@@ -52,6 +52,7 @@
 
 <script>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 export default {
   props: {
     page: {
@@ -61,10 +62,25 @@ export default {
   setup() {
     const login = ref(false);
     const url = window.location.href;
+    const router = useRouter();
+
+    const toCarts = () => {
+      router.push({
+        path: '/carts',
+      });
+    };
+
+    const toMypage = () => {
+      router.push({
+        path: '/mypage',
+      });
+    };
 
     return {
       login,
       url,
+      toCarts,
+      toMypage,
     };
   },
 };
@@ -113,12 +129,14 @@ header {
 .search-container img {
   position: absolute;
   right: 1.2em;
-  top: 9px;
+  top: 16px;
   width: 15px;
 }
 
 .login-btn {
   margin-left: 10em;
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 .login-btn a:first-child span {
@@ -126,6 +144,7 @@ header {
   font-weight: 700;
   cursor: pointer;
   margin-right: 2em;
+  white-space: nowrap;
 }
 
 .login-btn a:last-child span {
@@ -135,6 +154,7 @@ header {
   padding: 0.7em 1.2em;
   border-radius: 30px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .user-container {
@@ -153,6 +173,7 @@ header {
   font-weight: 700;
   cursor: pointer;
   margin-right: 1.5em;
+  white-space: nowrap;
 }
 
 .user-btn {
@@ -163,6 +184,7 @@ header {
   align-items: center;
   cursor: pointer;
   margin-right: 1em;
+  white-space: nowrap;
 }
 
 .user-btn img {
@@ -174,20 +196,13 @@ header {
   color: #313440;
   font-weight: 800;
   margin-right: 0.3em;
+  white-space: nowrap;
 }
 
 .user-btn span:last-child {
   color: #313440;
   font-weight: 500;
-}
-
-.apply-creator {
-  background-color: #081829;
-  color: white;
-  border-radius: 30px;
-  padding: 0.5em 1em;
-  font-weight: 600;
-  cursor: pointer;
+  white-space: nowrap;
 }
 
 .nav {
@@ -199,7 +214,7 @@ header {
 
 .nav > div {
   display: flex;
-  width: 1100px;
+  width: 950px;
 }
 
 .nav > div div {

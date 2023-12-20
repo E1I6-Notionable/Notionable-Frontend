@@ -44,6 +44,22 @@ const routes = [
         path: 'apply-creator',
         component: () => import('src/pages/user/ApplyCreator.vue'),
       },
+      {
+        path: 'carts',
+        component: () => import('src/pages/user/Carts.vue'),
+      },
+      {
+        path: 'mypage',
+        component: () => import('src/pages/user/MyPage.vue'),
+      },
+      {
+        path: 'mypage/info-update',
+        component: () => import('src/pages/user/MyPageInfoUpdate.vue'),
+      },
+      {
+        path: 'mypage/pwd-update',
+        component: () => import('src/pages/user/MyPagePwdUpdate.vue'),
+      },
     ],
   },
   {
