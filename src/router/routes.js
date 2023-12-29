@@ -44,6 +44,16 @@ const routes = [
         path: 'apply-creator',
         component: () => import('src/pages/user/ApplyCreator.vue'),
       },
+      {
+        path: 'community',
+        component: () => import('src/pages/community/CommunityPage.vue'),
+      },
+      {
+        path: '/posts/:id',
+        name: 'PostDetails',
+        component: () => import('src/pages/community/PostDetails.vue'),
+        props: true,
+      },
     ],
   },
   {
