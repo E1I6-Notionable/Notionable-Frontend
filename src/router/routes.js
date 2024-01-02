@@ -45,8 +45,24 @@ const routes = [
         component: () => import('src/pages/user/ApplyCreator.vue'),
       },
       {
-        path: 'community',
-        component: () => import('src/pages/community/CommunityPage.vue'),
+        path: '/posts/all',
+        component: () => import('src/pages/community/AllPosts.vue'),
+      },
+      {
+        path: '/posts/hot',
+        component: () => import('src/pages/community/HotPosts.vue'),
+      },
+      {
+        path: '/posts/free',
+        component: () => import('src/pages/community/FreePosts.vue'),
+      },
+      {
+        path: '/posts/inquiry',
+        component: () => import('src/pages/community/InquiryPosts.vue'),
+      },
+      {
+        path: '/posts/tip',
+        component: () => import('src/pages/community/TipPosts.vue'),
       },
       {
         path: '/posts/:id',

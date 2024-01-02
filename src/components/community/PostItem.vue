@@ -15,11 +15,11 @@
       <div class="row post-info">
         <div class="row time">
           <span class="created">2시간 전</span>
-          <span class="bar">&nbsp;|</span>
+          <span class="bar">|</span>
         </div>
         <div class="flex-center like">
           <q-btn class="full-width" flat dense @click.prevent>
-            <q-icon name="sym_o_favorite" size="sm" :label="likeCount" />
+            <img src="../../../public/img/icon/like.png" />
             <span class="text-black q-ml-xs text-body2">{{
               post.likeCount
             }}</span>
@@ -27,7 +27,7 @@
         </div>
         <div class="flex-center comment">
           <q-btn class="full-width" flat dense @click.prevent>
-            <q-icon name="sym_o_chat_bubble" size="sm" :label="commentCount" />
+            <img src="../../../public/img/icon/comment.png" />
             <span class="text-black q-ml-xs text-body2">23</span>
           </q-btn>
         </div>
@@ -78,12 +78,12 @@ h5 {
 .post-tab {
   color: #3168cd;
   font-weight: 600;
-  font-size: small;
+  font-size: 16px;
   align-items: center;
   justify-content: center;
   background-color: #d6e1f5;
   border-radius: 5px;
-  padding: 3px 10px;
+  padding: 2px 9px;
 }
 .bar {
   margin: 0 8px;
@@ -107,11 +107,17 @@ h5 {
 }
 
 .created {
-  padding: 6px 0px;
+  padding: 5px 0px;
+  font-size: 16px;
 }
 
 .like,
 .comment {
-  padding: 2px 0px;
+  padding: 3px 0px;
+}
+.text-body2 {
+  font-size: 17px;
+  margin-bottom: 2px;
+  margin-left: 5px;
 }
 </style>

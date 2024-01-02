@@ -2,14 +2,7 @@
   <q-item class="comment-item q-py-md">
     <q-item-section>
       <div class="row">
-        <q-avatar size="md">
-          <q-icon
-            class="account"
-            name="account_circle"
-            size="md"
-            color="grey"
-            :label="account"
-        /></q-avatar>
+        <img src="../../../../public/img/icon/default-profile.png" />
         <div class="flex text-caption q-pl-sm">
           <span
             class="text-black writer"
@@ -23,7 +16,7 @@
           >
           <span
             class="date"
-            style="color: #313440; font-weight: 500; font-size: medium"
+            style="color: #313440; font-weight: 500; font-size: 14.5px"
             >{{ comment.date }}</span
           >
         </div>
@@ -66,7 +59,7 @@ defineProps(['comment']);
 }
 .content {
   font-size: 16.8px;
-  font-weight: 550;
+  font-weight:bold;
   color: #313440;
 }
 .reply-separator {

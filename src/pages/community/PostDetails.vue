@@ -1,18 +1,17 @@
 <template>
   <div>
-    <CustomHeader page="community" />
+    <CustomHeader page="/posts/all" />
     <div class="community-page">
       <div class="post-title">
         <h5>{{ post.title }}</h5>
       </div>
       <div class="row post-info">
         <div class="row time">
-          <span class="created">{{ post.created }}</span>
-          <span class="bar">&nbsp;|</span>
+          <span class="created">{{ post.created }}&nbsp;&nbsp;&nbsp;</span>
         </div>
         <div class="flex-center like">
           <q-btn class="full-width" flat dense @click.prevent>
-            <q-icon name="sym_o_favorite" size="sm" :label="likeCount" />
+            <img src="../../../public/img/icon/like.png" />
             <span class="text-black q-ml-xs text-body2">{{
               post.likeCount
             }}</span>
@@ -20,12 +19,7 @@
         </div>
         <div class="flex-center comment">
           <q-btn class="full-width" flat dense @click.prevent>
-            <q-icon
-              name="sym_o_chat_bubble"
-              class="q-ml-xs"
-              size="sm"
-              :label="commentCount"
-            />
+            <img src="../../../public/img/icon/comment.png" />
             <span class="text-black q-ml-xs text-body2">23</span>
           </q-btn>
         </div>
@@ -38,12 +32,7 @@
       <div class="row post-info">
         <div class="flex-center like">
           <q-btn class="full-width" flat dense @click.prevent>
-            <q-icon
-              class="q-mb-lg"
-              name="sym_o_favorite"
-              size="md"
-              :label="likeCount"
-            />
+            <img src="../../../public/img/icon/like.png" />
             <span
               class="text-black q-mb-lg q-ml-xs text-body2"
               style="font-size: 17px"
@@ -52,18 +41,15 @@
           </q-btn>
         </div>
         <div class="flex-center q-ml-xs comment">
-          <q-btn class="full-width" flat dense @click.prevent>
-            <q-icon
-              class="q-mb-lg"
-              name="sym_o_chat_bubble"
-              size="md"
-              :label="commentCount"
-            />
-            <span
-              class="text-black q-mb-lg q-ml-xs text-body2"
-              style="font-size: 17px"
-              >23</span
-            >
+          <q-btn
+            class="full-width"
+            flat
+            dense
+            @click.prevent
+            style="font-size: 10px"
+          >
+            <img src="../../../public/img/icon/comment.png" />
+            <span class="text-black q-mb-lg q-ml-xs text-body2">23</span>
           </q-btn>
         </div>
       </div>
@@ -75,12 +61,7 @@
           :dense="dense"
         >
           <template v-slot:prepend>
-            <q-icon
-              name="account_circle"
-              size="md"
-              color="grey"
-              :label="account"
-            />
+            <img src="../../../public/img/icon/default-profile.png" />
             <p class="comment-writer">{{ writing_comment.writer }}</p>
           </template>
           <template v-slot:append>
@@ -180,7 +161,13 @@ export default {
 
 .like,
 .comment {
-  padding: 2px 0px;
+  padding: 2px 4px;
+}
+
+.text-body2 {
+  font-size: 17px;
+  margin-bottom: 2px;
+  margin-left: 5px;
 }
 
 .post-content {

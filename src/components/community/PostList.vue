@@ -1,6 +1,11 @@
 <template>
   <q-list class="post-list">
-    <PostItem v-for="post in items" :key="post.id" :post="post" :showLabel="showLabel"/>
+    <PostItem
+      v-for="post in items"
+      :key="post.id"
+      :post="post"
+      :showLabel="showLabel"
+    />
   </q-list>
 </template>
 
@@ -21,6 +26,7 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .post-list {
-  margin: 80px 0px;
+  margin: 90px 350px;
+  margin-bottom: 160px;
 }
 </style>
