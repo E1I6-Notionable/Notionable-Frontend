@@ -10,18 +10,20 @@
           <span class="created">{{ post.created }}&nbsp;&nbsp;&nbsp;</span>
         </div>
         <div class="flex-center like">
-          <q-btn class="full-width" flat dense @click.prevent>
+          <div class="like-img">
             <img src="../../../public/img/icon/like.png" />
-            <span class="text-black q-ml-xs text-body2">{{
-              post.likeCount
-            }}</span>
-          </q-btn>
+          </div>
+          <span class="text-black q-ml-xs text-body2">{{
+            post.likeCount
+          }}</span>
         </div>
         <div class="flex-center comment">
-          <q-btn class="full-width" flat dense @click.prevent>
+          <div class="comment-img">
             <img src="../../../public/img/icon/comment.png" />
-            <span class="text-black q-ml-xs text-body2">23</span>
-          </q-btn>
+          </div>
+          <span class="text-black q-ml-xs text-body2">{{
+            post.commentCount
+          }}</span>
         </div>
       </div>
       <q-separator />
@@ -31,11 +33,18 @@
       <q-separator />
       <div class="row post-info">
         <div class="flex-center like">
-          <q-btn class="full-width" flat dense @click.prevent>
-            <img src="../../../public/img/icon/like.png" />
+          <q-btn class="full-width" flat dense @click="toggleLike">
+            <img
+              :src="
+                isLiked
+                  ? '../../../public/img/icon/like_red.png'
+                  : '../../../public/img/icon/like.png'
+              "
+            />
             <span
               class="text-black q-mb-lg q-ml-xs text-body2"
               style="font-size: 17px"
+              id="count"
               >{{ post.likeCount }}</span
             >
           </q-btn>
@@ -49,7 +58,9 @@
             style="font-size: 10px"
           >
             <img src="../../../public/img/icon/comment.png" />
-            <span class="text-black q-mb-lg q-ml-xs text-body2">23</span>
+            <span class="text-black q-mb-lg q-ml-sm text-body2">{{
+              post.commentCount
+            }}</span>
           </q-btn>
         </div>
       </div>
@@ -82,6 +93,7 @@
 import CustomHeader from '../../components/CustomHeader.vue';
 import CustomFooter from '../../components/CustomFooter.vue';
 import CommentList from '../../components/community/comment/CommentList.vue';
+import { VueElement, ref } from 'vue';
 
 export default {
   components: {
@@ -98,6 +110,7 @@ export default {
         created: '2시간 전',
         likeCount: 106,
         commentCount: 23,
+        isLiked: false,
       },
       writing_comment: {
         writer: '서은',
@@ -132,6 +145,12 @@ export default {
       ],
     };
   },
+  methods: {
+    toggleLike() {
+      this.post.likeCount += this.isLiked ? -1 : 1;
+      this.isLiked = !this.isLiked;
+    },
+  },
 };
 </script>
 
@@ -158,10 +177,15 @@ export default {
 .created {
   padding: 6px 0px;
 }
-
+.like-img,
+.comment-img {
+  padding-top: 3px;
+  padding-left: 2px;
+}
 .like,
 .comment {
   padding: 2px 4px;
+  display: flex;
 }
 
 .text-body2 {
