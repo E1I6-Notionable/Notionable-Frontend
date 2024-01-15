@@ -1,65 +1,90 @@
 <template>
   <div class="template-review-top">
-    <div class="review-write-btn">
-      <img src="/img/icon/pencil.png" />
-      <span>구매후기 작성하기</span>
-    </div>
+    <ReviewWriteBtn page="review" />
     <div class="template-satisfaction">
       <span>99%</span><span>의 구매자가 만족한 템플릿이에요</span>
     </div>
   </div>
   <div class="template-review-list">
-    <div class="template-review-item" v-for="i in 3" :key="i">
+    <div
+      class="template-review-item"
+      v-for="review in reviewList"
+      :key="review.reviewId"
+    >
       <div class="review-profile">
-        <img src="/img/icon/default-profile.png" />
-        <span>만족해요 👍🏻</span>
+        <div class="review-profile-img">
+          <img
+            :src="
+              review.profile ? review.profile : '/img/icon/default-profile.png'
+            "
+          />
+        </div>
+        <span>{{ review.rate }} 👍🏻</span>
       </div>
       <div class="review-date">2023.11.12</div>
       <div class="review-imgs">
-        <div v-for="i in 3" :key="i" />
+        <div v-for="image in review.imageUrls" :key="image">
+          <img :src="image" />
+        </div>
       </div>
       <div class="reveiw-content">
         <p>
-          덕분에 체계적인 일 관리가 가능해졌어요.<br />흩어져있는 자료를
-          정리하기에 좋습니다.
+          {{ review.content }}
         </p>
-        <span>댓글 2</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import ReviewWriteBtn from './ReviewWriteBtn.vue';
+import axios from '../../axios';
+import { useRoute } from 'vue-router';
+import { ref } from 'vue';
+export default {
+  components: {
+    ReviewWriteBtn,
+  },
+  setup() {
+    const reviewList = ref([]);
+    const route = useRoute();
+    const id = route.params.id;
+
+    const getReviewList = async () => {
+      try {
+        // const res = await axios.get(`/template/review/list/${id}`);
+        // reviewList.value = res.data.data;
+        reviewList.value = [
+          {
+            reviewId: 1,
+            nickName: 'test_user',
+            profile: 'imageurl',
+            rate: '만족해요',
+            content: '댓글 내용',
+            imageUrls: [
+              'https://notionable-s3-bucket.s3.ap-northeast-2.amazonaws.com/2eea54d7-685c-459c-8c55-d092d1452001.png',
+              'https://notionable-s3-bucket.s3.ap-northeast-2.amazonaws.com/0b1e592e-6489-4443-b9f4-0d35eede9cf5.png',
+            ],
+          },
+        ];
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getReviewList();
+
+    return {
+      reviewList,
+    };
+  },
+};
 </script>
 
 <style>
 .template-review-top {
   margin-top: 1em;
   position: relative;
-}
-
-.review-write-btn {
-  background-color: #fafafc;
-  padding: 0.7em 1.4em;
-  display: flex;
-  border-radius: 30px;
-  cursor: pointer;
-  width: fit-content;
-  position: absolute;
-  top: 0.5em;
-  right: 0;
-}
-
-.review-write-btn img {
-  width: 17px;
-  height: 17px;
-  margin-right: 0.5em;
-}
-
-.review-write-btn span {
-  color: #313440;
-  font-weight: 600;
 }
 
 .template-satisfaction {
@@ -92,9 +117,17 @@ export default {};
   align-items: center;
 }
 
-.review-profile img {
+.review-profile-img {
   width: 35px;
+  height: 35px;
+  border-radius: 100%;
   margin-right: 1em;
+  overflow: hidden;
+  display: flex;
+}
+
+.review-profile-img img {
+  object-fit: cover;
 }
 
 .review-profile span {
@@ -117,7 +150,11 @@ export default {};
   width: 200px;
   height: 140px;
   border-radius: 20px;
-  background-color: white;
+  overflow: hidden;
+}
+
+.review-imgs img {
+  object-fit: cover;
 }
 
 .reveiw-content {
