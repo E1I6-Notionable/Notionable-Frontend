@@ -66,6 +66,22 @@ const routes = [
         component: () => import('src/pages/community/PostDetails.vue'),
         props: true,
       },
+      {
+        path: 'carts',
+        component: () => import('src/pages/user/Carts.vue'),
+      },
+      {
+        path: 'mypage',
+        component: () => import('src/pages/user/MyPage.vue'),
+      },
+      {
+        path: 'mypage/info-update',
+        component: () => import('src/pages/user/MyPageInfoUpdate.vue'),
+      },
+      {
+        path: 'mypage/pwd-update',
+        component: () => import('src/pages/user/MyPagePwdUpdate.vue'),
+      },
     ],
   },
   {
