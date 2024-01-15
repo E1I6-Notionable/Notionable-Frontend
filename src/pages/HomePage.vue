@@ -7,18 +7,29 @@
           <p>추천 무료 템플릿</p>
         </div>
         <div class="carousel">
-          <div class="carousel-img">
+          <div
+            :class="`carousel-img ${
+              bannerList.length % 2 === 0 ? '' : 'img-center'
+            }`"
+          >
             <div
               v-for="(banner, i) in bannerList"
               :key="i"
               :style="`transition: ${carouselTransition}; transform: translateX(-${num}00%)`"
+              @click="toTemplatePage(banner.templateId)"
             >
-              <div>{{ banner }}</div>
+              <img :src="banner.thumbnail" alt="thumbnail-img" />
             </div>
           </div>
           <div class="control">
             <div class="control-btn">‹</div>
-            <span>{{ num < 10 ? `0${num + 1}` : num + 1 }}</span>
+            <span>{{
+              num < 10
+                ? `0${(num + 1) % 3 === 0 ? banner.length : (num + 1) % 3}`
+                : (num + 1) % 3 === 0
+                ? banner.length
+                : (num + 1) % 3
+            }}</span>
             <span>/{{ bannerCount }}</span>
             <div class="control-btn">›</div>
           </div>
@@ -31,24 +42,51 @@
         <div class="carousel">
           <div class="carousel-img">
             <div
-              v-for="(banner, i) in bannerList"
+              v-for="(banner, i) in payBannerList"
               :key="i"
-              :style="`transition: ${carouselTransition}; transform: translateX(-${num}00%)`"
+              :style="`transition: ${payCarouselTransition}; transform: translateX(-${payNum}00%)`"
+              @click="toTemplatePage(banner.templateId)"
             >
-              <div>{{ banner }}</div>
+              <img :src="banner.thumbnail" alt="thumbnail-img" />
             </div>
           </div>
           <div class="control">
             <div class="control-btn">‹</div>
-            <span>{{ num < 10 ? `0${num + 1}` : num + 1 }}</span>
-            <span>/{{ bannerCount }}</span>
+            <span>{{
+              payNum < 10
+                ? `0${
+                    (payNum + 1) % 3 === 0 ? payBanner.length : (payNum + 1) % 3
+                  }`
+                : (payNum + 1) % 3 === 0
+                ? payBanner.length
+                : (payNum + 1) % 3
+            }}</span>
+            <span>/{{ payBannerCount }}</span>
             <div class="control-btn">›</div>
           </div>
         </div>
       </div>
       <div class="banner">
-        <img src="/img/Banner_1.png" />
-        <img src="/img/Banner_2.png" />
+        <div class="banner-container community-banner">
+          <div class="banner-content">
+            <p class="community-p">노션 사용하다가 질문이 생기셨다면?</p>
+            <div>
+              <p class="community-p">노셔너블 커뮤니티 바로가기</p>
+              <div class="community-btn">›</div>
+            </div>
+          </div>
+          <img src="/img/banner_img.png" />
+        </div>
+        <div class="banner-container creator-banner" @click="toApplyCreator">
+          <div class="banner-content">
+            <p>Notionable의 크리에이터가 되어주세요!</p>
+            <div>
+              <p>크리에이터 신청 바로가기</p>
+              <div class="creator-btn">›</div>
+            </div>
+          </div>
+          <img src="/img/banner_img2.png" />
+        </div>
       </div>
     </div>
     <CustomFooter />
@@ -59,6 +97,8 @@
 import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue';
 import CustomHeader from '../components/CustomHeader.vue';
 import CustomFooter from '../components/CustomFooter.vue';
+import axios from 'src/axios';
+import { useRouter } from 'vue-router';
 export default {
   name: 'HomePage',
   components: {
@@ -67,14 +107,36 @@ export default {
   },
   setup() {
     const num = ref(0);
+    const payNum = ref(0);
     const carouselTransition = ref('transform 500ms ease-in-out');
+    const payCarouselTransition = ref('transform 500ms ease-in-out');
     let timer;
+    let payTimer;
     const banner = ref([]);
+    const payBanner = ref([]);
+    const router = useRouter();
+
     const bannerList = computed(() => {
       if (banner.value.length !== 0) {
-        return [...banner.value, ...banner.value, ...banner.value];
+        return [
+          ...banner.value,
+          ...banner.value,
+          ...banner.value,
+          banner.value[0],
+        ];
       } else return [];
     });
+    const payBannerList = computed(() => {
+      if (payBanner.value.length !== 0) {
+        return [
+          ...payBanner.value,
+          ...payBanner.value,
+          ...payBanner.value,
+          payBanner.value[0],
+        ];
+      } else return [];
+    });
+
     const bannerCount = computed(() => {
       if (banner.value.length !== 0) {
         return banner.value.length < 10
@@ -85,8 +147,26 @@ export default {
       }
     });
 
-    const getHomePage = () => {
-      banner.value = [0, 1, 2, 3, 4, 5, 6];
+    const payBannerCount = computed(() => {
+      if (payBanner.value.length !== 0) {
+        return payBanner.value.length < 10
+          ? '0' + payBanner.value.length
+          : payBanner.value.length;
+      } else {
+        return 0;
+      }
+    });
+
+    const getHomePage = async () => {
+      try {
+        const res = await axios.get('template/recommend-free');
+        const payRes = await axios.get('template/recommend-paid');
+        console.log(res);
+        banner.value = res.data.data;
+        payBanner.value = payRes.data.data;
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     getHomePage();
@@ -96,15 +176,23 @@ export default {
     //     num.value = num.value + 1;
     //     carouselTransition.value = 'transform 500ms ease-in-out';
     //   }, 3000);
+    //   payTimer = setInterval(() => {
+    //     payNum.value = payNum.value + 1;
+    //     payCarouselTransition.value = 'transform 500ms ease-in-out';
+    //   }, 3000);
     // });
 
     onUnmounted(() => {
       clearInterval(timer);
+      clearInterval(payTimer);
     });
 
     watchEffect(() => {
-      if (num.value === banner.value.length) {
+      if (num.value === banner.value.length + 1) {
         handleOriginSlide(0);
+      }
+      if (payNum.value === payBanner.value.length + 1) {
+        payHandleOriginSlide(0);
       }
     });
 
@@ -115,11 +203,34 @@ export default {
       });
     };
 
+    const payHandleOriginSlide = index => {
+      setTimeout(() => {
+        payNum.value = index;
+        payCarouselTransition.value = '';
+      });
+    };
+
+    const toApplyCreator = () => {
+      router.push('/apply-creator');
+    };
+
+    const toTemplatePage = id => {
+      router.push(`/template/${id}`);
+    };
+
     return {
       num,
       carouselTransition,
       bannerList,
       bannerCount,
+      banner,
+      payNum,
+      payCarouselTransition,
+      payBanner,
+      payBannerList,
+      payBannerCount,
+      toApplyCreator,
+      toTemplatePage,
     };
   },
 };
@@ -139,7 +250,7 @@ export default {
 }
 
 .title {
-  width: 1500px;
+  width: 1400px;
   display: flex;
   justify-content: flex-start;
 }
@@ -147,7 +258,7 @@ export default {
 .title > p {
   font-size: 1.5rem;
   font-weight: 900;
-  margin: 1.5em 3.5em;
+  margin: 1.5em 2.5em;
 }
 
 .carousel {
@@ -157,6 +268,9 @@ export default {
 .carousel-img {
   display: flex;
   overflow: hidden;
+}
+
+.img-center {
   justify-content: center;
 }
 
@@ -170,12 +284,12 @@ export default {
   overflow: hidden;
 }
 
-.carousel-img > div > div {
+.carousel-img > div > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 18px;
-  background-color: gray;
+  cursor: pointer;
 }
 
 .control {
@@ -210,15 +324,83 @@ export default {
 }
 
 .banner {
-  margin-top: 6em;
-  padding: 0 4em;
+  width: 1400px;
+  margin: 6em auto 0;
 }
 
-.banner img {
+.banner-container {
+  display: flex;
+  height: 170px;
+  border-radius: 10px;
+  justify-content: space-between;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.community-banner {
+  background-color: #081829;
+  margin-bottom: 2em;
+}
+
+.creator-banner {
+  background-color: #ffed46;
+}
+
+.banner-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 6em;
+}
+
+.banner-content > p:first-child {
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin: 0 0 0.3em 0;
+}
+
+.banner-content > div {
+  display: flex;
+  align-items: center;
+}
+
+.banner-content > div > p {
+  font-weight: bold;
+  font-size: 1.8rem;
+  margin: 0 0.5em 0 0;
+}
+
+.banner-content > div > div {
+  height: 30px;
+  width: 30px;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.2em;
+  font-size: 2rem;
+}
+
+.community-p {
+  color: white;
+}
+
+.community-btn {
+  background-color: #3a4554;
+  color: white;
+}
+
+.creator-btn {
+  background-color: rgba(0, 0, 0, 0.236);
+  color: #081829;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.282);
+}
+
+/* .banner img {
   width: 100%;
   margin: 1em 0;
   cursor: pointer;
-}
+} */
 
 a {
   text-decoration: none;

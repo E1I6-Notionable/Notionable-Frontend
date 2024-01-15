@@ -6,17 +6,17 @@
       <div class="mypage-filter-list">
         <div
           :class="
-            currentFilter === filter
+            currentFilter === filter.name
               ? 'mypage-filter filter-click'
               : 'mypage-filter'
           "
           v-for="filter in filterList"
           :key="filter"
-          @click="clickFilter(filter)"
+          @click="clickFilter(filter.name)"
         >
-          <p>{{ filter }}</p>
+          <p>{{ filter.name }}</p>
           <div>
-            <span>1</span>
+            <span>{{ filter.num }}</span>
             <span>건</span>
           </div>
         </div>
@@ -39,6 +39,7 @@ import PurchaseHistory from 'src/components/user/PurchaseHistory.vue';
 import MyContents from 'src/components/user/MyContents.vue';
 import InquiryHistory from 'src/components/user/InquiryHistory.vue';
 import { ref } from 'vue';
+import axios from '../../axios';
 
 export default {
   components: {
@@ -50,7 +51,30 @@ export default {
     InquiryHistory,
   },
   setup() {
-    const filterList = ['구매내역', '내가 쓴 글', '문의 내역'];
+    const getMyPage = async () => {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          'Access-Control-Allow-Origin': 'http://localhost:9000',
+          'Access-Control-Allow-Credentials': true,
+        },
+      };
+
+      try {
+        const res = await axios.get('user/my-profile', config);
+        console.log(res);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getMyPage();
+
+    const filterList = [
+      { name: '구매내역', num: 2 },
+      { name: '내가 쓴 글', num: 1 },
+      { name: '문의 내역', num: 1 },
+    ];
     const currentFilter = ref('구매내역');
     const clickFilter = filter => {
       currentFilter.value = filter;

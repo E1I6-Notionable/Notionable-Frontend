@@ -23,8 +23,13 @@
         <span @click="toCarts" class="basket">장바구니</span>
         <div class="user-btn" @click="toMypage">
           <img src="/img/icon/default-profile.png" />
-          <span>서은</span>
+          <span>{{ user.name }}</span>
           <span>님</span>
+        </div>
+        <span class="logout-btn" @click="handleLogout">로그아웃</span>
+        <div class="alarm-btn">
+          <i class="fa-regular fa-bell"></i>
+          <div />
         </div>
       </div>
     </div>
@@ -51,8 +56,9 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 export default {
   props: {
     page: {
@@ -60,9 +66,30 @@ export default {
     },
   },
   setup() {
-    const login = ref(false);
+    const login = computed(() => store.state.user.login);
     const url = window.location.href;
     const router = useRouter();
+    const store = useStore();
+    const user = computed(() => store.state.user);
+
+    const getLoginStatus = () => {
+      if (
+        localStorage.getItem('accessToken') !== null &&
+        localStorage.getItem('refreshToken') !== null
+      ) {
+        store.dispatch('user/loginUser', {
+          ...user.value,
+          login: true,
+        });
+      } else {
+        store.dispatch('user/loginUser', {
+          ...user.value,
+          login: false,
+        });
+      }
+    };
+
+    getLoginStatus();
 
     const toCarts = () => {
       router.push({
@@ -76,11 +103,21 @@ export default {
       });
     };
 
+    const handleLogout = () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      store.dispatch('user/loginUser', {
+        login: false,
+      });
+    };
+
     return {
       login,
       url,
       toCarts,
       toMypage,
+      handleLogout,
+      user,
     };
   },
 };
@@ -90,13 +127,12 @@ export default {
 header {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .header-top {
   display: flex;
   align-items: center;
-  padding: 3em 5em;
+  padding: 3em 6em;
 }
 
 .header-top img {
@@ -129,7 +165,7 @@ header {
 .search-container img {
   position: absolute;
   right: 1.2em;
-  top: 16px;
+  top: 10px;
   width: 15px;
 }
 
@@ -183,7 +219,7 @@ header {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-right: 1em;
+  margin-right: 1.5em;
   white-space: nowrap;
 }
 
@@ -203,6 +239,33 @@ header {
   color: #313440;
   font-weight: 500;
   white-space: nowrap;
+}
+
+.logout-btn {
+  color: #313440;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 0.8em;
+}
+
+.alarm-btn {
+  position: relative;
+}
+
+.alarm-btn i {
+  color: #3a3a3a;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.alarm-btn div {
+  width: 4px;
+  height: 4px;
+  background-color: #ff4a4a;
+  border-radius: 100%;
+  position: absolute;
+  top: -2px;
+  right: -2px;
 }
 
 .nav {

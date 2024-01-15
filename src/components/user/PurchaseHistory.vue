@@ -5,7 +5,7 @@
       <i class="fa-solid fa-chevron-right"></i>
     </div>
     <div class="purchase-template">
-      <div class="purchase-template-img" />
+      <img class="purchase-template-img" src="/img/test_img.png" />
       <div class="purchase-template-content">
         <div class="purchase-template-title">
           <span>구매완료</span>
@@ -68,12 +68,12 @@ export default {
 }
 
 .purchase-template-img {
-  background-color: gray;
   width: 180px;
   height: 130px;
   border-radius: 10px;
   margin-right: 2em;
   flex-shrink: 0;
+  object-fit: cover;
 }
 
 .purchase-template-content {

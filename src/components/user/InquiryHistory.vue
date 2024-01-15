@@ -1,5 +1,5 @@
 <template>
-  <div class="inquiry-history-list" v-for="i in 5" :key="i">
+  <div class="inquiry-history-list" v-for="i in 1" :key="i">
     <div class="inquiry-history">
       <div class="inquiry-history-title">
         <img src="/img/icon/default-profile.png" />

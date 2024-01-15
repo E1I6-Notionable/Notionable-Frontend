@@ -6,7 +6,7 @@
       "
       @click="categoryView = !categoryView"
     >
-      <span>{{ currentCategory }}</span>
+      <span>{{ currentCategory.ko }}</span>
       <i
         :class="
           !categoryView ? 'fas fa-angle-down fa-xs' : 'fas fa-angle-up fa-xs'
@@ -22,7 +22,7 @@
         :key="i"
         @click="clickCategory(category)"
       >
-        {{ category }}
+        {{ category.ko }}
       </div>
     </div>
   </div>
@@ -39,7 +39,7 @@ export default {
   },
   setup(props, { emit }) {
     const categoryView = ref(false);
-    const currentCategory = ref('카테고리');
+    const currentCategory = ref({ ko: '카테고리' });
     const clickCategory = category => {
       categoryView.value = false;
       currentCategory.value = category;
@@ -59,7 +59,7 @@ export default {
 <style scoped>
 .category {
   position: relative;
-  margin-right: 2em;
+  margin: 0 1em;
 }
 
 .category-btn,

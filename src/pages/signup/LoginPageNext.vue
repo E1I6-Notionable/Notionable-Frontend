@@ -45,6 +45,7 @@ import { ref } from 'vue';
 import axios from 'src/axios';
 import { useRouter } from 'vue-router';
 import CustomInput from 'src/components/CustomInput.vue';
+import { useStore } from 'vuex';
 export default {
   name: 'SignupPageNext',
   components: {
@@ -54,6 +55,7 @@ export default {
     const emailText = ref('');
     const passwordText = ref('');
     const router = useRouter();
+    const store = useStore();
 
     const login = async () => {
       try {
@@ -62,6 +64,15 @@ export default {
           password: passwordText.value,
         });
         console.log(res);
+        localStorage.setItem('accessToken', res.data.data.jwtDto.accessToken);
+        localStorage.setItem('refreshToken', res.data.data.jwtDto.refreshToken);
+        store.dispatch('user/loginUser', {
+          login: true,
+          name: res.data.data.nickName,
+          phoneNumber: '',
+          email: res.data.data.email,
+        });
+        router.replace('/');
       } catch (err) {
         console.log(err);
       }

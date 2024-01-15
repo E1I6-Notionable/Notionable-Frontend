@@ -13,10 +13,6 @@ const routes = [
         component: () => import('pages/signup/SignupPageNext.vue'),
       },
       {
-        path: 'signupsuccess',
-        component: () => import('pages/signup/SignUpSuccess.vue'),
-      },
-      {
         path: 'login',
         component: () => import('pages/signup/LoginPage.vue'),
       },
@@ -37,7 +33,7 @@ const routes = [
         component: () => import('src/pages/template/PayTemplatePage.vue'),
       },
       {
-        path: 'template',
+        path: 'template/:id',
         component: () => import('src/pages/template/TemplateDetailPage.vue'),
       },
       {

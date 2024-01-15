@@ -83,6 +83,7 @@ export default {
   display: flex;
   justify-content: center;
   margin: 5em 0;
+  min-height: 50vh;
 }
 
 .creator-apply {

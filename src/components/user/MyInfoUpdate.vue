@@ -3,7 +3,7 @@
     <img src="/img/icon/default-profile.png" />
     <div class="profile-info">
       <div class="profile-title">
-        <h4>횬닝이</h4>
+        <h4>{{ userInfo.nickName }}</h4>
         <span>구매자</span>
       </div>
       <div class="picture-btn">
@@ -31,18 +31,22 @@
     />
     <CustomInput
       name="휴대폰 번호"
-      placeholder="이메일을 입력해주세요."
+      placeholder="휴대폰 번호를 입력해주세요."
       type="text"
       v-model:value="numberText"
       @update-value="updateNumber"
       :icon="false"
     />
   </div>
+  <div class="update-btn">
+    <button @click="updateMyInfo">수정 완료</button>
+  </div>
 </template>
 
 <script>
 import { ref } from 'vue';
 import CustomInput from '../CustomInput.vue';
+import axios from '../../axios';
 export default {
   components: {
     CustomInput,
@@ -51,6 +55,16 @@ export default {
     const nameText = ref('');
     const emailText = ref('');
     const numberText = ref('');
+    const userInfo = ref({
+      userId: 1,
+      email: '',
+      password: '',
+      userType: 0,
+      role: null,
+      nickName: '',
+      profile: '',
+      phoneNumber: '',
+    });
 
     const updateName = name => {
       nameText.value = name;
@@ -64,6 +78,42 @@ export default {
       numberText.value = number;
     };
 
+    const accessToken = localStorage.getItem('accessToken');
+    const config = {
+      headers: {
+        accessToken,
+      },
+    };
+
+    const getMyInfo = async () => {
+      try {
+        //const res = await axios.get('user/my-profile', config);
+        //userInfo.value = res.data.data;
+        nameText.value = userInfo.value.nickName;
+        emailText.value = userInfo.value.email;
+        numberText.value = userInfo.value.phoneNumber;
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getMyInfo();
+
+    const updateMyInfo = async () => {
+      try {
+        await axios.patch(
+          'user/my-profile/modify',
+          {
+            nickName: nameText.value,
+          },
+          config,
+        );
+        alert('수정이 완료되었습니다.');
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     return {
       nameText,
       emailText,
@@ -71,6 +121,8 @@ export default {
       updateName,
       updateEmail,
       updateNumber,
+      userInfo,
+      updateMyInfo,
     };
   },
 };
@@ -125,5 +177,23 @@ export default {
 
 .update-input {
   margin-top: 4em;
+}
+
+.update-btn {
+  display: flex;
+  justify-content: center;
+  margin-top: 3em;
+}
+
+button {
+  background-color: #081829;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.9em;
+  width: 320px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
 }
 </style>

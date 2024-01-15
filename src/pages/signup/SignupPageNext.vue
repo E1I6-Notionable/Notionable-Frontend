@@ -7,11 +7,33 @@
         <div>
           <span>이메일</span>
           <span>*</span>
-          <input
-            v-model="input.email"
-            placeholder="이메일을 입력해주세요."
-            type="email"
-          />
+          <div class="email-input">
+            <input
+              v-model="input.email"
+              placeholder="이메일을 입력해주세요."
+              type="email"
+            />
+            <span @click="submitNumber">인증번호 전송</span>
+          </div>
+        </div>
+        <div>
+          <span>인증번호 입력</span>
+          <span>*</span>
+          <div class="email-input">
+            <input
+              v-model="input.authCode"
+              placeholder="인증번호를 입력해주세요"
+            />
+            <span v-if="!loading" @click="submitAuthCode">확인</span>
+            <span v-else><q-spinner-dots color="grey" size="2em" /></span>
+          </div>
+          <span
+            v-if="resultCode !== null"
+            :class="resultCode ? 'same' : 'not-same'"
+            >{{
+              resultCode ? '인증이 완료되었습니다.' : '다시 시도해주세요.'
+            }}</span
+          >
         </div>
         <div>
           <span>비밀번호</span>
@@ -47,31 +69,10 @@
         <div>
           <span>핸드폰 번호</span>
           <span>*</span>
-          <div class="phone-input">
-            <input
-              placeholder="010부터 숫자만 입력해주세요"
-              v-model="input.phoneNumber"
-            />
-            <span @click="submitNumber">인증번호 전송</span>
-          </div>
-        </div>
-        <div class="phone-number-input-container">
-          <span>인증번호 입력</span>
-          <span>*</span>
-          <div class="phone-input">
-            <input
-              v-model="input.authCode"
-              placeholder="인증번호를 입력해주세요"
-            />
-            <span @click="submitAuthCode">확인</span>
-          </div>
-          <span
-            v-if="resultCode !== null"
-            :class="resultCode ? 'same' : 'not-same'"
-            >{{
-              resultCode ? '인증이 완료되었습니다.' : '다시 시도해주세요.'
-            }}</span
-          >
+          <input
+            placeholder="010부터 숫자만 입력해주세요"
+            v-model="input.phoneNumber"
+          />
         </div>
         <div class="terms-container">
           <div class="terms-checkbox">
@@ -126,16 +127,23 @@
         <span>누르면 가입완료!</span>
       </div>
     </div>
+    <div v-if="signupNext">
+      <SignUpSuccess :name="name" />
+    </div>
   </div>
 </template>
 
 <script>
 import { computed, ref } from 'vue';
-import axios from 'axios';
+import axios from 'src/axios';
 import { useRouter } from 'vue-router';
+import SignUpSuccess from '../../components/signup/SignUpSuccess.vue';
 
 export default {
   name: 'SignupPageNext',
+  components: {
+    SignUpSuccess,
+  },
   setup() {
     const router = useRouter();
     const input = ref({
@@ -177,6 +185,9 @@ export default {
     });
     const namePage = ref(false);
     const name = ref('');
+    let code;
+    const loading = ref(false);
+    const signupNext = ref(false);
 
     const controlPwView = () => {
       if (passwordView.value === 'password') {
@@ -187,23 +198,24 @@ export default {
     };
 
     const submitNumber = async () => {
+      loading.value = true;
       try {
-        const res = await axios.post('/signup/send-code', {
-          phoneNumber: input.value.phoneNumber,
+        const res = await axios.post('auth/email', {
+          email: input.value.email,
         });
+        loading.value = false;
         console.log(res);
+        code = res.data.data;
       } catch (err) {
         console.log(err);
+        loading.value = false;
+        alert('다시 시도해주세요.');
       }
     };
 
-    const submitAuthCode = async () => {
-      try {
-        resultCode.value = true;
-      } catch (err) {
-        console.log(err);
-        resultCode.value = false;
-      }
+    const submitAuthCode = () => {
+      if (input.value.authCode === code) resultCode.value = true;
+      else resultCode.value = false;
     };
 
     const allCheck = () => {
@@ -220,7 +232,7 @@ export default {
 
     const signup = async () => {
       try {
-        const res = await axios.post('/signup/complete', {
+        const res = await axios.post('signup/complete', {
           email: input.value.email,
           password: input.value.password,
           userType: 0,
@@ -228,6 +240,7 @@ export default {
           phoneNumber: input.value.phoneNumber,
         });
         console.log(res);
+        signupNext.value = true;
       } catch (err) {
         console.log(err);
       }
@@ -253,6 +266,8 @@ export default {
       name,
       signup,
       toHome,
+      loading,
+      signupNext,
     };
   },
 };
@@ -339,7 +354,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .password-input,
-.phone-input {
+.email-input {
   position: relative;
   height: fit-content;
 }
@@ -352,13 +367,13 @@ input[type='number']::-webkit-inner-spin-button {
   cursor: pointer;
 }
 
-.phone-input > span {
+.email-input > span {
   position: absolute;
   right: 15px;
   top: 30%;
 }
 
-.phone-input > span {
+.email-input > span {
   font-size: 0.8rem;
   text-decoration: underline;
   cursor: pointer;

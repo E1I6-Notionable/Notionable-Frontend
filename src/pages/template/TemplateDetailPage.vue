@@ -3,7 +3,7 @@
     <CustomHeader page="template" />
     <div class="template-page">
       <div class="template-detail">
-        <div class="template-img" />
+        <img class="template-img" :src="templateDesc.thumbnail" />
         <div class="template-detail-desc">
           <div class="template-nav">
             <div
@@ -20,7 +20,7 @@
         </div>
       </div>
       <div>
-        <PaymentFloating />
+        <PaymentFloating :templateDesc="templateDesc" />
       </div>
     </div>
     <CustomFooter />
@@ -34,6 +34,9 @@ import PaymentFloating from 'src/components/template/PaymentFloating.vue';
 import TemplateNotice from '../../components/template/TemplateNotice.vue';
 import TemplateReview from '../../components/template/TemplateReview.vue';
 import { ref } from 'vue';
+import axios from '../../axios';
+import { useRoute } from 'vue-router';
+
 export default {
   name: 'TemplatePage',
   components: {
@@ -44,22 +47,53 @@ export default {
     TemplateReview,
   },
   setup() {
+    const route = useRoute();
+    const id = route.params.id;
+
     const categoryList = [
       '상품상세',
       '구매후기',
       '판매자 정보',
       '문의 및 규정',
     ];
-
     const currentCategory = ref('상품상세');
     const clickCategory = category => {
       currentCategory.value = category;
     };
 
+    const templateDesc = ref({
+      templateId: 0,
+      nickName: '',
+      profile: '',
+      thumbnail: '',
+      title: '',
+      category: '',
+      price: 0,
+      content: '',
+      imageUrls: [''],
+      createdAt: '',
+    });
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'Access-Control-Allow-Origin': 'http://localhost:9000',
+        'Access-Control-Allow-Credentials': true,
+      },
+    };
+
+    const getTemplateDetail = async () => {
+      const res = await axios.get(`template/detail/${id}`, config);
+      templateDesc.value = res.data.data;
+    };
+
+    getTemplateDetail();
+
     return {
       categoryList,
       currentCategory,
       clickCategory,
+      templateDesc,
     };
   },
 };
@@ -82,8 +116,8 @@ export default {
 .template-img {
   width: 100%;
   height: 400px;
-  background-color: rgb(211, 211, 211);
   border-radius: 50px;
+  object-fit: cover;
 }
 
 .template-detail-desc {

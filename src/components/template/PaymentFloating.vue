@@ -1,21 +1,91 @@
 <template>
   <div class="template-floating">
     <div class="template-author">
-      <img src="/img/icon/default-profile.png" />
-      <span>횬닝</span>
+      <div class="profile-img">
+        <img
+          :src="
+            templateDesc.profile
+              ? templateDesc.profile
+              : '/img/icon/default-profile.png'
+          "
+        />
+      </div>
+      <span>{{ templateDesc.nickName }}</span>
     </div>
-    <p>프로 일잘러의 노션</p>
-    <span>900원</span>
+    <p>{{ templateDesc.title }}</p>
+    <div class="template-price">
+      <span>{{ templateDesc.price ? `${templateDesc.price}원` : '무료' }}</span>
+      <div class="template-cart">
+        <img @click="addCarts" src="/img/icon/basket.png" />
+        <span>장바구니</span>
+      </div>
+    </div>
     <div class="template-floating-btn">
       <div><span>문의하기</span></div>
       <div><span>공유하기</span></div>
     </div>
-    <div class="pay-btn">결제하기</div>
+    <div class="pay-btn" @click="clickPayment">결제하기</div>
+  </div>
+  <div v-if="tossPaymentView" class="modal-wrap">
+    <TossPayment :templateDesc="templateDesc" />
   </div>
 </template>
 
 <script>
-export default {};
+import axios from '../../axios';
+import { ref, watch } from 'vue';
+import TossPayment from './TossPayment.vue';
+export default {
+  components: {
+    TossPayment,
+  },
+  props: {
+    templateDesc: {
+      type: Object,
+    },
+  },
+  setup({ templateDesc }) {
+    const accessToken = `Bearer ${localStorage.getItem('accessToken')}`;
+    const config = {
+      Authorization: accessToken,
+    };
+    const tossPaymentView = ref(false);
+
+    const addCarts = async () => {
+      await axios.post(
+        'user/my-cart/add',
+        {
+          user_id: '',
+          template_id: templateDesc.templateId,
+          creator: templateDesc.nickName,
+          template_url: '',
+          attribute: '',
+          price: templateDesc.price,
+          title: templateDesc.title,
+        },
+        config,
+      );
+    };
+
+    const clickPayment = () => {
+      tossPaymentView.value = true;
+    };
+
+    watch(tossPaymentView, tossPaymentView => {
+      if (tossPaymentView === true) {
+        document.body.style.overflowY = 'hidden';
+      } else {
+        document.body.style.overflowY = 'auto';
+      }
+    });
+
+    return {
+      addCarts,
+      clickPayment,
+      tossPaymentView,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -29,8 +99,16 @@ export default {};
   align-items: center;
 }
 
-.template-author img {
+.profile-img {
   width: 30px;
+  height: 30px;
+  border-radius: 100%;
+  overflow: hidden;
+  display: flex;
+}
+
+.template-author img {
+  object-fit: cover;
 }
 
 .template-author span {
@@ -46,12 +124,39 @@ export default {};
   margin: 0.3em 0;
 }
 
-.template-floating > span {
+.template-price {
+  display: flex;
+  align-items: center;
+}
+
+.template-price > span {
   background-color: #ffed46;
   color: #081829;
   padding: 0.2em 0.6em;
   font-weight: 700;
   border-radius: 20px;
+  margin-right: 1.3em;
+}
+
+.template-cart {
+  border: 1px solid #cacbd3;
+  border-radius: 30px;
+  padding: 0.5em 1.2em;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.template-cart img {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5em;
+}
+
+.template-cart span {
+  color: #081829;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .template-floating-btn {
@@ -83,5 +188,14 @@ export default {};
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.modal-wrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
 }
 </style>

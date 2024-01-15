@@ -1,42 +1,65 @@
 <template>
   <div class="template-item">
-    <div class="template-img" />
+    <img
+      class="template-img"
+      :src="template.thumbnail"
+      @click="toTemplatePage(template.templateId)"
+    />
     <div class="template-author">
-      <span>추천</span>
-      <span>서은</span>
+      <span class="template-recommend">추천</span>
+      <span class="template-author">{{ template.nickName }}</span>
     </div>
-    <span class="template-title"
-      >완벽한 학점 관리를 위한 예복습 노션 템플릿</span
-    >
+    <span class="template-title" @click="toTemplatePage(template.templateId)">{{
+      template.title
+    }}</span>
     <div class="template-price">
       <img src="/img/icon/price-receipt.png" />
-      <span>900원</span>
+      <span>{{ template.price ? `${template.price}원` : '무료' }}</span>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import { useRouter } from 'vue-router';
+export default {
+  props: {
+    template: {
+      type: Object,
+    },
+  },
+  setup() {
+    const router = useRouter();
+    const toTemplatePage = id => {
+      router.push(`template/${id}`);
+    };
+
+    return {
+      toTemplatePage,
+    };
+  },
+};
 </script>
 
 <style>
 .template-item {
   margin-top: 2em;
-  width: 320px;
+  width: calc(100% / 3);
+  padding: 0 1em;
 }
 
 .template-img {
   height: 220px;
-  background-color: #e9e9e9;
+  width: 100%;
   border-radius: 12px;
   cursor: pointer;
+  object-fit: cover;
 }
 
 .template-author {
   margin: 1em 0 0.5em 0;
 }
 
-.template-author span:first-child {
+.template-recommend {
   background-color: #d6e1f5;
   color: #3168cd;
   padding: 0.2em 0.5em;
@@ -45,7 +68,7 @@ export default {};
   margin-right: 0.5em;
 }
 
-.template-author span:last-child {
+.template-author {
   color: #7b7b7b;
   font-weight: 500;
 }

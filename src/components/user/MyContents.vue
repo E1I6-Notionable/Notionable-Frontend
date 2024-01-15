@@ -1,5 +1,5 @@
 <template>
-  <div class="my-contents" v-for="i in 5" :key="i">
+  <div class="my-contents" v-for="i in 1" :key="i">
     <div class="contents-title-container">
       <div class="contents-title">
         <span>꿀팁</span>
