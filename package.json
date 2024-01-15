@@ -15,7 +15,7 @@
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "@tosspayments/payment-widget-sdk": "^0.10.2",
-    "axios": "^1.6.2",
+    "axios": "^1.6.5",
     "pinia": "^2.1.7",
     "quasar": "^2.6.0",
     "uuid": "^9.0.1",

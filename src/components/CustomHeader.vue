@@ -45,8 +45,8 @@
             유료 템플릿
           </div>
         </router-link>
-        <router-link to="/community">
-          <div :class="{ 'nav-clicked': url.includes('community') }">
+        <router-link to="/posts/all">
+          <div :class="{ 'nav-clicked': url.includes('posts') }">
             커뮤니티
           </div>
         </router-link>
