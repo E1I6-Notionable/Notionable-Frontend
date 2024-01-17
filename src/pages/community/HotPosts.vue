@@ -14,6 +14,7 @@ import CustomHeader from 'src/components/CustomHeader.vue';
 import CustomFooter from 'src/components/CustomFooter.vue';
 import Tabs from 'src/components/community/CommunityTabs.vue';
 import PostList from 'src/components/community/PostList.vue';
+import axios from 'axios';
 
 export default {
   components: {
@@ -22,63 +23,65 @@ export default {
     PostList,
     CustomFooter,
   },
+
   data() {
     return {
-      posts: [
-        {
-          id: 1,
-          title: '일 잘하는 PM 소리 듣는 노션 활용법 공유할게요!',
-          content:
-            '요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~',
-          likeCount: 106,
-          commentCount: 23,
-          label: 'TOP 1',
-        },
-        {
-          id: 2,
-          title: '일 잘하는 PM 소리 듣는 노션 활용법 공유할게요!',
-          content:
-            '요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~',
-          likeCount: 106,
-          commentCount: 23,
-          label: 'TOP 2',
-        },
-        {
-          id: 3,
-          title: '일 잘하는 PM 소리 듣는 노션 활용법 공유할게요!',
-          content:
-            '요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~',
-          likeCount: 106,
-          commentCount: 23,
-          label: 'TOP 3',
-        },
-        {
-          id: 4,
-          title: '일 잘하는 PM 소리 듣는 노션 활용법 공유할게요!',
-          content:
-            '요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~',
-          likeCount: 106,
-          commentCount: 23,
-          label: 'TOP 4',
-        },
-        {
-          id: 5,
-          title: '일 잘하는 PM 소리 듣는 노션 활용법 공유할게요!',
-          content:
-            '요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~\n 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~ 요즘 노션 정말 필수잖아요~',
-          likeCount: 106,
-          commentCount: 23,
-          label: 'TOP 5',
-        },
-      ],
+      posts: [],
+      currentPage: 0,
+      hasMorePosts: true,
+      keyword: null,
+      filter: null,
+      pageSize: 5,
     };
   },
 
-  // computed: {
-  //   topPosts() {
-  //   const sortedPosts = [...this.posts].sort((a, b) => b.likeCount - a.likeCount);
-  //   return sortedPosts.slice(0, 5);
-  //   },
-  //   },
+  async created() {
+    await this.fetchPosts();
+  },
+
+  methods: {
+    async fetchPosts() {
+      try {
+        const { data } = await axios.get(
+          'http://13.209.29.227:8080/posts/hot',
+          {
+            params: {
+              keyword: this.keyword,
+              filter: this.filter,
+              page: this.currentPage,
+              size: this.pageSize,
+            },
+          },
+        );
+
+        if (data.success) {
+          let newPosts = data.data.map((item,index) => ({
+            id: item.communityId,
+            category: item.category,
+            title: item.title,
+            content: item.content,
+            likeCount: item.communityLike,
+            commentCount: item.communityComment,
+            createdAt: item.createdAt,
+            thumbnail: item.thumbnail,
+            label:index+1,
+          }));
+
+          if (this.currentPage < data.maxPageCount - 1) {
+            this.currentPage++;
+            await this.fetchPosts();
+          } else {
+            this.hasMorePosts = false;
+          }
+
+          this.posts = [...this.posts, ...newPosts];
+        } else {
+          console.error('Backend returned success: false', data);
+        }
+      } catch (error) {
+        console.error('Error fetching data from the backend', error);
+      }
+    },
+  },
 };
 </script>

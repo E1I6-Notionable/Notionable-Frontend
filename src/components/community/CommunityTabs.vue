@@ -11,13 +11,14 @@
         :class="{ 'clicked-button': button.clicked }"
       />
     </div>
+
     <q-btn
       padding="4.5px 12px 4.5px 12px"
       unelevated
       color="white"
       text-color="black"
       class="post-write"
-      @click="goToWritePage"
+      to="../posts"
     >
       <img src="../../../public/img/icon/tabler_pencil.png" />
       <span class="text-weight-bold">&nbsp;글 작성하기</span>
@@ -93,5 +94,6 @@ export default {
   border-radius: 50px;
   border: 1.5px solid #cacbd3;
   font-size: 16px;
+  width: 150px;
 }
 </style>
