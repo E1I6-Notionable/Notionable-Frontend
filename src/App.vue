@@ -46,6 +46,7 @@ export default {
                 name: res.data.data.nickName,
                 phoneNumber: res.data.data.phoneNumber,
                 email: res.data.data.email,
+                profile: res.data.data.profile,
               });
               router.replace('/');
             }
