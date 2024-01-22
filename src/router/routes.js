@@ -37,6 +37,10 @@ const routes = [
         component: () => import('src/pages/user/ApplyCreator.vue'),
       },
       {
+        path: '/posts',
+        component: () => import('src/pages/community/PostWrite.vue'),
+      },
+      {
         path: '/posts/all',
         component: () => import('src/pages/community/AllPosts.vue'),
       },
@@ -59,7 +63,7 @@ const routes = [
       {
         path: '/posts/:id',
         name: 'PostDetails',
-        component: () => import('src/pages/community/PostDetails.vue'),
+        component: () => import('src/pages/community/PostDetailsPage.vue'),
         props: true,
       },
       {
