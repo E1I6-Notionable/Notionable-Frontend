@@ -1,20 +1,32 @@
 <template>
-  <q-item clickable :to="`/posts/${post.id}`" class="post-item">
-    <q-item-section>
-      <p v-if="showLabel" class="label">TOP {{ post.label }}</p>
-      <div class="post-title">
-        <p class="post-tab">{{ post.category }}</p>
-        <p class="bar">|</p>
-        <h5>{{ post.title }}</h5>
-      </div>
-      <div class="post-content">
-        <div :class="{ 'content-container': post.thumbnail }">
-          <p>
-            {{ post.content }}
-          </p>
+  <q-item
+    :class="{ 'label-present': showLabel }"
+    clickable
+    :to="`/posts/${post.id}`"
+    class="post-item"
+  >
+    <q-item-section
+      style="
+        height: 280px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      "
+    >
+      <div>
+        <p v-if="showLabel" class="label">TOP {{ post.label }}</p>
+        <div class="post-title">
+          <p class="post-tab">{{ post.category }}</p>
+          <p class="bar">|</p>
+          <h5>{{ post.title }}</h5>
         </div>
-        <div v-if="post.thumbnail" class="thumbnail-container">
-          <img :src="post.thumbnail" alt="Thumbnail" class="thumbnail" />
+        <div class="post-content">
+          <div :class="{ 'content-container': post.thumbnail }">
+            <p>{{ post.content }}</p>
+          </div>
+          <div v-if="post.thumbnail" class="thumbnail-container">
+            <img :src="post.thumbnail" alt="Thumbnail" class="thumbnail" />
+          </div>
         </div>
       </div>
       <div class="row post-info">
@@ -29,7 +41,6 @@
               src="../../../public/img/icon/like_red.png"
             />
             <img v-else src="../../../public/img/icon/like.png" />
-
             <span class="text-black q-ml-xs text-body2">{{
               post.likeCount
             }}</span>
@@ -48,7 +59,6 @@
     </q-item-section>
   </q-item>
 </template>
-
 <script>
 import dayjs from 'dayjs';
 
@@ -81,7 +91,7 @@ export default {
       } else if (daysDiff <= 7) {
         return `${daysDiff}일 전`;
       } else {
-        return postDate.format('YYYY년 MM월 DD일');
+        return postDate.format('YY.MM.DD');
       }
     },
   },
@@ -93,11 +103,17 @@ export default {
   margin: 20px 0px;
 }
 
+.label-present {
+  height: 320px;
+  margin-top: 70px;
+}
+
 .label {
   font-size: 21px;
   font-weight: bolder;
   color: #313440;
-  padding-top: 18px;
+  margin-top: -60px;
+  margin-bottom: 25px;
 }
 .post-title {
   display: flex;
@@ -133,7 +149,8 @@ h5 {
 
 .post-content {
   width: 100%;
-  margin-top: 10px;
+  height: 120px;
+  margin-top: 20px;
   display: flex;
   font-size: 18px;
   font-weight: 530;
@@ -142,6 +159,7 @@ h5 {
 
 .content-container {
   width: 70%;
+  height: 140px;
   display: flex;
 }
 

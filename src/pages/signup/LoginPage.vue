@@ -5,15 +5,15 @@
       <p>
         3초만에 빠르게 {{ page === 'login' ? '로그인' : '회원가입' }}하세요!
       </p>
-      <div class="kakao-login">
+      <div class="kakao-login" @click="kakaoLogin">
         <img src="/img/social_logo/kakao_logo.png" />
         <span>카카오로 {{ page === 'login' ? '로그인하기' : '시작하기' }}</span>
       </div>
-      <div class="naver-login">
+      <div class="naver-login" @click="naverLogin">
         <img src="/img/social_logo/naver_logo.png" />
         <span>네이버로 {{ page === 'login' ? '로그인하기' : '시작하기' }}</span>
       </div>
-      <div class="google-login">
+      <div class="google-login" @click="googleLogin">
         <img src="/img/social_logo/google_logo.png" />
         <span>구글로 {{ page === 'login' ? '로그인하기' : '시작하기' }}</span>
       </div>
@@ -47,9 +47,24 @@ export default {
       router.push({ name: 'Home' });
     };
 
+    const kakaoLogin = () => {
+      window.location.replace(process.env.KAKAO_SOCIAL_URL);
+    };
+
+    const googleLogin = () => {
+      window.location.replace(process.env.GOOGLE_SOCIAL_URL);
+    };
+
+    const naverLogin = () => {
+      window.location.replace(process.env.NAVER_SOCIAL_URL);
+    };
+
     return {
       page,
       toHome,
+      kakaoLogin,
+      googleLogin,
+      naverLogin,
     };
   },
 };

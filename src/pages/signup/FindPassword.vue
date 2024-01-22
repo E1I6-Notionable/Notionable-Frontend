@@ -24,6 +24,7 @@
           label="이메일을 입력하세요"
           class="bg-white"
           outlined
+          v-model="email"
         >
         </q-input>
       </div>
@@ -38,8 +39,9 @@
           text-color="white"
           class="q-mt-lg full-width q-btn-rounded"
           style="border-radius: 10px"
+          @click="resetPwd"
         >
-          <span>비밀번호 재설정 링크 받기</span>
+          <span>비밀번호 재설정하기</span>
         </q-btn>
         <q-space />
       </div>
@@ -48,18 +50,33 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from '../../axios';
 
 export default {
   setup() {
     const router = useRouter();
+    const email = ref('');
 
     const toHome = () => {
       router.push({ name: 'Home' });
     };
 
+    const resetPwd = async () => {
+      try {
+        const res = await axios.post('find-password', {
+          email,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     return {
       toHome,
+      email,
+      resetPwd,
     };
   },
 };

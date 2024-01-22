@@ -33,7 +33,10 @@
         <p>{{ post.content }}</p>
         <div class="images">
           <div v-for="(imageUrl, index) in post.imageUrls" :key="index">
-            <img :src="imageUrl" style="height: 200px; width: 200px; margin-right: 25px;"/>
+            <img
+              :src="imageUrl"
+              style="height: 200px; width: 200px; margin-right: 25px"
+            />
           </div>
         </div>
       </div>
@@ -76,7 +79,10 @@
           :dense="dense"
         >
           <template v-slot:prepend>
-            <img src="../../../public/img/icon/default-profile.png" />
+            <img
+              src="../../../public/img/icon/default-profile.png"
+              style="width: 25px"
+            />
             <p class="comment-writer">{{ commentWriter }}</p>
           </template>
           <template v-slot:append>
@@ -104,6 +110,7 @@ import CustomFooter from '../../components/CustomFooter.vue';
 import CommentList from '../../components/community/comment/CommentList.vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useQuasar } from 'quasar';
 
 export default {
   components: {
@@ -114,7 +121,7 @@ export default {
   props: {
     postId: {
       type: String,
-      required: true,
+      default: undefined,
     },
   },
   data() {
@@ -192,7 +199,7 @@ export default {
       } else if (daysDiff <= 7) {
         return `${daysDiff}일 전`;
       } else {
-        return postDate.format('YYYY년 MM월 DD일');
+        return postDate.format('YY.MM.DD');
       }
     },
 
@@ -205,6 +212,39 @@ export default {
       }
     },
     submitComment() {
+      const $q = useQuasar();
+      if (!this.commentText) {
+        $q.notify('댓글을 작성해주세요!');
+      }
+      const token = localStorage.getItem('accessToken');
+      console.log(token);
+      const postId = this.$route.params.id;
+      console.log(postId);
+      console.log(this.commentText);
+      axios
+        .post(
+          `http://13.209.29.227:8080/comments/${postId}`,
+          {
+            content: this.commentText,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+        .then(response => {
+          if (response.data.success) {
+            this.commentText = '';
+            this.fetchData(); 
+          } else {
+            console.error('Comment submission failed:', response.data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error submitting comment:', error);
+        });
     },
   },
   computed: {},

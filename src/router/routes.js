@@ -13,10 +13,6 @@ const routes = [
         component: () => import('pages/signup/SignupPageNext.vue'),
       },
       {
-        path: 'signupsuccess',
-        component: () => import('pages/signup/SignUpSuccess.vue'),
-      },
-      {
         path: 'login',
         component: () => import('pages/signup/LoginPage.vue'),
       },
@@ -37,7 +33,7 @@ const routes = [
         component: () => import('src/pages/template/PayTemplatePage.vue'),
       },
       {
-        path: 'template',
+        path: 'template/:id',
         component: () => import('src/pages/template/TemplateDetailPage.vue'),
       },
       {
@@ -73,6 +69,22 @@ const routes = [
         name: 'PostDetails',
         component: () => import('src/pages/community/PostDetailsPage.vue'),
         props: true,
+      },
+      {
+        path: 'carts',
+        component: () => import('src/pages/user/Carts.vue'),
+      },
+      {
+        path: 'mypage',
+        component: () => import('src/pages/user/MyPage.vue'),
+      },
+      {
+        path: 'mypage/info-update',
+        component: () => import('src/pages/user/MyPageInfoUpdate.vue'),
+      },
+      {
+        path: 'mypage/pwd-update',
+        component: () => import('src/pages/user/MyPagePwdUpdate.vue'),
       },
     ],
   },

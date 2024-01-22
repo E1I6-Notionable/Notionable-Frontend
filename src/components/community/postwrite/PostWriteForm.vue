@@ -33,7 +33,7 @@
           @change="updateTitle"
         />
         <q-separator />
-          <TiptapEditor v-model="contentModel" />
+        <TiptapEditor v-model="contentModel" />
       </q-card-section>
       <q-separator />
       <q-card-actions align="left">
@@ -43,7 +43,15 @@
             flat
             rounded
             label="등록하기"
-            style="font-weight: 500; font-size: 15px; background-color: #313440; color: white; width: 95px; height: 35px;margin-top: 20px;"
+            style="
+              font-weight: 500;
+              font-size: 15px;
+              background-color: #313440;
+              color: white;
+              width: 95px;
+              height: 35px;
+              margin-top: 20px;
+            "
             :loading="loading"
           />
         </slot>
@@ -56,12 +64,14 @@
 import { ref } from 'vue';
 import TiptapEditor from 'src/components/community/postwrite/TipTapEditor.vue';
 import axios from 'axios';
-import {useQuasar} from 'quasar';
+import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
 
 const $q = useQuasar();
 const value = ref('카테고리');
 const list = ref(['자유게시판', '꿀팁 공유', '질문있어요']);
 const visible = ref(false);
+const router = useRouter();
 
 const toggle = () => {
   visible.value = !visible.value;
@@ -70,7 +80,6 @@ const toggle = () => {
 const updateCategory = option => {
   value.value = option;
 };
-
 
 const props = defineProps({
   title: {
@@ -107,12 +116,14 @@ const handleSubmit = async () => {
     $q.notify('내용을 작성하세요.');
     return;
   }
-  const token = localStorage.getItem('jwtToken');
+  const token = localStorage.getItem('accessToken');
+  console.log("제목", titleModel.value, "카테고리", value.value, "내용", contentModel.value);
+  console.log(token);
   try {
     const response = await axios.post(
       'http://13.209.29.227:8080/posts/add',
       {
-        title: props.title,
+        title: titleModel.value,
         category: value.value,
         content: contentModel.value,
       },
@@ -121,12 +132,23 @@ const handleSubmit = async () => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
     console.log('Post saved successfully:', response.data);
     emit('submit');
+    const routeToNavigate = '/posts/all';
+    router.push(routeToNavigate);
+
   } catch (error) {
     console.error('Error saving post:', error);
+    if (error.response) {
+      console.error('Server responded with:', error.response.status);
+      console.error('Response data:', error.response.data);
+    } else if (error.request) {
+      console.error('No response received');
+    } else {
+      console.error('Error setting up the request:', error.message);
+    }
   }
 };
 </script>
@@ -205,6 +227,4 @@ input {
 input::placeholder {
   color: black;
 }
-
-
 </style>

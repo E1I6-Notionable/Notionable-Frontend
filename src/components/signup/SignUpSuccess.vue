@@ -36,15 +36,22 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script>
+export default {
+  props: {
+    name: {
+      type: String,
+    },
+  },
+  setup() {
+    const goToMainPage = () => {
+      const mainPagePath = '/main'; // 메인페이지 예시: /main
 
-const name = ref('이서은');
+      $router.push(mainPagePath);
+    };
 
-const goToMainPage = () => {
-  const mainPagePath = '/main'; // 메인페이지 예시: /main
-
-  $router.push(mainPagePath);
+    return { goToMainPage };
+  },
 };
 </script>
 
