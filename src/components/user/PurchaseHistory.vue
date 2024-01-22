@@ -1,23 +1,29 @@
 <template>
-  <div class="purchase-history" v-for="i in 3" :key="i">
-    <div class="purchase-date">
-      <span>2023.11.17</span>
+  <div
+    class="purchase-history"
+    v-for="purchase in purchaseList"
+    :key="purchase.approvedAt"
+  >
+    <div class="purchase-date" @click="toTemplatePage(purchase.templateId)">
+      <span>{{ parseDate(purchase.approvedAt) }}</span>
       <i class="fa-solid fa-chevron-right"></i>
     </div>
     <div class="purchase-template">
-      <img class="purchase-template-img" src="/img/test_img.png" />
+      <img class="purchase-template-img" :src="purchase.thumbnail" />
       <div class="purchase-template-content">
         <div class="purchase-template-title">
           <span>구매완료</span>
-          <span>프로 일잘러의 노션</span>
-          <span>횬닝</span>
+          <span>{{ purchase.title }}</span>
+          <span>{{ purchase.creatorName }}</span>
         </div>
         <div class="purchase-template-bottom">
           <div class="purchase-template-price">
             <img src="/img/icon/price-receipt.png" />
-            <span>0 원</span>
+            <span>{{
+              purchase.price === 0 ? '무료' : `${purchase.price} 원`
+            }}</span>
           </div>
-          <ReviewWriteBtn />
+          <ReviewWriteBtn @click="toWriteReview(purchase.templateId)" />
         </div>
       </div>
     </div>
@@ -26,9 +32,59 @@
 
 <script>
 import ReviewWriteBtn from 'src/components/template/ReviewWriteBtn.vue';
+import axios from '../../axios';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 export default {
   components: {
     ReviewWriteBtn,
+  },
+  setup() {
+    const purchaseList = ref([]);
+    const router = useRouter();
+    const store = useStore();
+
+    const getPurchaseHistory = async () => {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          'Access-Control-Allow-Origin': 'http://localhost:9000',
+          'Access-Control-Allow-Credentials': true,
+        },
+      };
+
+      try {
+        const res = await axios.get('payments/buying', config);
+        console.log(res);
+        purchaseList.value = res.data.data;
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getPurchaseHistory();
+
+    const parseDate = approvedAt => {
+      const date = new Date(approvedAt);
+      return date.toLocaleDateString();
+    };
+
+    const toTemplatePage = id => {
+      router.push(`/template/none/none/${id}`);
+    };
+
+    const toWriteReview = id => {
+      store.dispatch('template/clickWriteReview', { writeReview: true });
+      router.push(`/template/none/none/${id}`);
+    };
+
+    return {
+      purchaseList,
+      parseDate,
+      toTemplatePage,
+      toWriteReview,
+    };
   },
 };
 </script>
@@ -48,6 +104,7 @@ export default {
 .purchase-date {
   position: relative;
   width: 130px;
+  cursor: pointer;
 }
 
 .purchase-date span {

@@ -16,7 +16,7 @@
               v-for="(banner, i) in bannerList"
               :key="i"
               :style="`transition: ${carouselTransition}; transform: translateX(-${num}00%)`"
-              @click="toTemplatePage(banner.templateId)"
+              @click="toTemplatePage('free', banner.templateId)"
             >
               <img :src="banner.thumbnail" alt="thumbnail-img" />
             </div>
@@ -45,7 +45,7 @@
               v-for="(banner, i) in payBannerList"
               :key="i"
               :style="`transition: ${payCarouselTransition}; transform: translateX(-${payNum}00%)`"
-              @click="toTemplatePage(banner.templateId)"
+              @click="toTemplatePage('paid', banner.templateId)"
             >
               <img :src="banner.thumbnail" alt="thumbnail-img" />
             </div>
@@ -214,8 +214,8 @@ export default {
       router.push('/apply-creator');
     };
 
-    const toTemplatePage = id => {
-      router.push(`/template/${id}`);
+    const toTemplatePage = (type, id) => {
+      router.push(`/template/${type}/none/${id}`);
     };
 
     return {

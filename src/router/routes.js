@@ -25,15 +25,11 @@ const routes = [
         component: () => import('pages/signup/FindPassword.vue'),
       },
       {
-        path: 'freetemplate',
-        component: () => import('src/pages/template/FreeTemplatePage.vue'),
+        path: 'template/:type/:search',
+        component: () => import('src/pages/template/TemplatePage.vue'),
       },
       {
-        path: 'paytemplate',
-        component: () => import('src/pages/template/PayTemplatePage.vue'),
-      },
-      {
-        path: 'template/:id',
+        path: 'template/:type/:search/:id',
         component: () => import('src/pages/template/TemplateDetailPage.vue'),
       },
       {
@@ -81,6 +77,14 @@ const routes = [
       {
         path: 'mypage/pwd-update',
         component: () => import('src/pages/user/MyPagePwdUpdate.vue'),
+      },
+      {
+        path: 'mypage/my-review',
+        component: () => import('src/pages/user/MyReview.vue'),
+      },
+      {
+        path: 'mypage/my-scrap',
+        component: () => import('src/pages/user/MyScrap.vue'),
       },
     ],
   },

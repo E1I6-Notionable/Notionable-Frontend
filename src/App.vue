@@ -12,6 +12,15 @@ export default {
     const store = useStore();
     const url = window.location.href;
     const route = useRoute();
+    const arrayUrl = [...url];
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'Access-Control-Allow-Origin': 'http://localhost:9000',
+        'Access-Control-Allow-Credentials': true,
+      },
+    };
 
     const sendCode = socialType => {
       router
@@ -49,17 +58,22 @@ export default {
         });
     };
 
-    const confirmPayments = () => {
-      const arrayUrl = [...url];
+    const submitEmail = async () => {
       const templateId = arrayUrl[30];
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          'Access-Control-Allow-Origin': 'http://localhost:9000',
-          'Access-Control-Allow-Credentials': true,
-        },
-      };
+      try {
+        const res = await axios.get(`template/url-mail/${templateId}`, config);
+        console.log(res);
+        if (res.data.code === 200) {
+          router.replace('/mypage');
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    const confirmPayments = () => {
+      const templateId = arrayUrl[30];
 
       router
         .isReady()
@@ -76,6 +90,9 @@ export default {
               config,
             );
             console.log(res);
+            if (res.data.code === 200) {
+              submitEmail();
+            }
           } catch (err) {
             console.log(err);
           }

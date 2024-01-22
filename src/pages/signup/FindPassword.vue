@@ -11,7 +11,7 @@
       <p class="container-title">비밀번호 찾기</p>
       <p class="container-content">
         가입 시 등록하신 이메일 주소를 입력해 주세요.<br />
-        비밀번호 재설정 링크를 보내드립니다.
+        임시 비밀번호를 보내드립니다.
       </p>
       <q-space />
       <div style="display: flex; margin-top: 50px">
@@ -66,8 +66,9 @@ export default {
     const resetPwd = async () => {
       try {
         const res = await axios.post('find-password', {
-          email,
+          email: email.value,
         });
+        console.log(res);
       } catch (err) {
         console.log(err);
       }

@@ -51,6 +51,12 @@ export default {
     InquiryHistory,
   },
   setup() {
+    const filterList = ref([
+      { name: '구매내역', num: 0 },
+      { name: '내가 쓴 글', num: 0 },
+      { name: '문의 내역', num: 0 },
+    ]);
+
     const getMyPage = async () => {
       const config = {
         headers: {
@@ -62,7 +68,19 @@ export default {
 
       try {
         const res = await axios.get('user/my-profile', config);
+        const listCount = await axios.get('user/list/count', config);
         console.log(res);
+        filterList.value = [
+          { name: '구매내역', num: listCount.data.data.paymentCount },
+          {
+            name: '내가 쓴 글',
+            num: listCount.data.data.postCount,
+          },
+          {
+            name: '문의 내역',
+            num: listCount.data.data.inquiryCount,
+          },
+        ];
       } catch (err) {
         console.log(err);
       }
@@ -70,11 +88,6 @@ export default {
 
     getMyPage();
 
-    const filterList = [
-      { name: '구매내역', num: 2 },
-      { name: '내가 쓴 글', num: 1 },
-      { name: '문의 내역', num: 1 },
-    ];
     const currentFilter = ref('구매내역');
     const clickFilter = filter => {
       currentFilter.value = filter;
