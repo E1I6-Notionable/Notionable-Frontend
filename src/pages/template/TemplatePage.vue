@@ -2,7 +2,12 @@
   <div>
     <CustomHeader page="template" />
     <div class="template-page">
-      <div class="filter">
+      <TemplateCategory
+        v-if="type === 'free'"
+        :categoryList="categoryList"
+        @click-category="clickCategory"
+      />
+      <div class="filter" v-else>
         <TemplateCategory
           :categoryList="categoryList"
           @click-category="clickCategory"
@@ -17,8 +22,9 @@
           v-for="(template, i) in templateList"
           :key="i"
           :template="template"
-        >
-        </TemplateItem>
+          :type="type"
+          :search="searchText"
+        />
       </div>
     </div>
     <CustomFooter />
@@ -30,8 +36,10 @@ import CustomHeader from '../../components/CustomHeader.vue';
 import CustomFooter from '../../components/CustomFooter.vue';
 import TemplateCategory from 'src/components/template/TemplateCategory.vue';
 import TemplateItem from '../../components/template/TemplateItem.vue';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import axios from '../../axios';
+import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 export default {
   name: 'FreeTemplatePage',
   components: {
@@ -41,6 +49,11 @@ export default {
     TemplateItem,
   },
   setup() {
+    const route = useRoute();
+    const type = computed(() => route.params.type);
+    const searchText = computed(() => route.params.search);
+    const store = useStore();
+
     const categoryList = [
       { ko: '전체', en: '' },
       { ko: '학업관리', en: 'studyManagement' },
@@ -57,17 +70,28 @@ export default {
 
     const currentCategory = ref('');
     const currentPrice = ref('');
-    const templateList = ref([]);
+    // const templateList = ref([]);
+    const templateList = computed(() => store.state.template.templateList);
 
-    const getTemplate = async (category = { en: '' }, currentPrice = '') => {
+    const getTemplate = async (
+      category = { en: '' },
+      currentPrice = '',
+      searchText = '',
+    ) => {
       let params = {
         page: 0,
-        keyword: '',
-        template_type: 'paid',
+        keyword: searchText === 'none' ? '' : searchText,
+        template_type: '',
         category: category.en,
         criteria: currentPrice,
         criteria_option: '',
       };
+
+      if (type.value === 'free') {
+        params = { ...params, template_type: 'free' };
+      } else if (type.value === 'paid') {
+        params = { ...params, template_type: 'paid' };
+      }
 
       if (currentPrice.ko === '고가순') {
         params = { ...params, criteria: 'price', criteria_option: 'desc' };
@@ -82,20 +106,25 @@ export default {
           params,
         });
         console.log(res);
-        templateList.value = res.data.data;
+        // templateList.value = res.data.data;
+        store.dispatch('template/addList', { templateList: res.data.data });
       } catch (err) {
         console.log(err);
       }
     };
 
-    getTemplate();
+    getTemplate({ en: '' }, '', searchText.value);
+
+    watch(type, () => {
+      getTemplate();
+    });
 
     watch(currentCategory, () => {
-      getTemplate(currentCategory.value, currentPrice.value);
+      getTemplate(currentCategory.value, currentPrice.value, searchText.value);
     });
 
     watch(currentPrice, () => {
-      getTemplate(currentCategory.value, currentPrice.value);
+      getTemplate(currentCategory.value, currentPrice.value, searchText.value);
     });
 
     const clickCategory = category => {
@@ -114,6 +143,8 @@ export default {
       currentCategory,
       currentPrice,
       templateList,
+      type,
+      searchText,
     };
   },
 };

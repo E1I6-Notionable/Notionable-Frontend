@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="template-floating-btn">
-      <div><span>문의하기</span></div>
+      <div><span @click="clickInquire">문의하기</span></div>
       <div><span>공유하기</span></div>
     </div>
     <div class="pay-btn" @click="clickPayment">결제하기</div>
@@ -29,15 +29,20 @@
   <div v-if="tossPaymentView" class="modal-wrap">
     <TossPayment :templateDesc="templateDesc" />
   </div>
+  <div v-if="inquireModalView" class="modal-wrap">
+    <InquireModal :templateDesc="templateDesc" :clickInquire="clickInquire" />
+  </div>
 </template>
 
 <script>
 import axios from '../../axios';
 import { ref, watch } from 'vue';
 import TossPayment from './TossPayment.vue';
+import InquireModal from './InquireModal.vue';
 export default {
   components: {
     TossPayment,
+    InquireModal,
   },
   props: {
     templateDesc: {
@@ -45,30 +50,48 @@ export default {
     },
   },
   setup({ templateDesc }) {
-    const accessToken = `Bearer ${localStorage.getItem('accessToken')}`;
     const config = {
-      Authorization: accessToken,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'Access-Control-Allow-Origin': 'http://localhost:9000',
+        'Access-Control-Allow-Credentials': true,
+      },
     };
     const tossPaymentView = ref(false);
+    const inquireModalView = ref(false);
+
+    const clickInquire = () => {
+      inquireModalView.value = !inquireModalView.value;
+    };
 
     const addCarts = async () => {
-      await axios.post(
-        'user/my-cart/add',
-        {
-          user_id: '',
-          template_id: templateDesc.templateId,
-          creator: templateDesc.nickName,
-          template_url: '',
-          attribute: '',
-          price: templateDesc.price,
-          title: templateDesc.title,
-        },
-        config,
-      );
+      try {
+        const res = await axios.post(
+          'user/my-cart/add',
+          {
+            template_id: templateDesc.templateId,
+            creator: templateDesc.nickName,
+            template_url: templateDesc.thumbnail,
+            attribute: null,
+            price: templateDesc.price,
+            title: templateDesc.title,
+          },
+          config,
+        );
+        if (res.data.code === 200) alert('장바구니에 추가되었습니다.');
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     const clickPayment = () => {
-      tossPaymentView.value = true;
+      if (templateDesc.price === 0) {
+        alert('결제가 완료되었습니다.');
+      } else if (templateDesc.paid) {
+        alert('이미 결제한 템플릿입니다.');
+      } else {
+        tossPaymentView.value = true;
+      }
     };
 
     watch(tossPaymentView, tossPaymentView => {
@@ -83,6 +106,8 @@ export default {
       addCarts,
       clickPayment,
       tossPaymentView,
+      inquireModalView,
+      clickInquire,
     };
   },
 };

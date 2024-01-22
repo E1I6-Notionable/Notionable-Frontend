@@ -71,6 +71,7 @@ export default {
           name: res.data.data.nickName,
           phoneNumber: '',
           email: res.data.data.email,
+          profile: res.data.data.profile,
         });
         router.replace('/');
       } catch (err) {
