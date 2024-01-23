@@ -1,1 +1,6 @@
 // app global css in SCSS form
+
+@import url('https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css');
+body {
+  font-family: 'SUIT Variable', sans-serif;
+}
