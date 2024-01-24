@@ -14,40 +14,27 @@
   <div v-else class="creator-form-container">
     <h1>크리에이터 신청하기</h1>
     <div class="creator-form">
-      <div class="drop-down">
-        <span>입점형태</span>
-        <div>
-          <span>개인사업자</span>
-          <span>▾</span>
-        </div>
-      </div>
-      <div class="drop-down">
-        <span>은행</span>
-        <div>
-          <span>KB국민은행</span>
-          <span>▾</span>
-        </div>
-      </div>
+      <Dropdown
+        title="입점형태"
+        :dropdownList="['개인사업자']"
+        @click-category="storeCategory"
+      />
+      <Dropdown
+        title="은행"
+        :dropdownList="bankList"
+        @click-category="bankCategory"
+      />
       <div class="account-number">
         <span>계좌번호</span>
-        <input placeholder="계좌번호를 입력해주세요." />
+        <input
+          placeholder="계좌번호를 입력해주세요."
+          v-model="creatorInfo.accountNumber"
+        />
       </div>
-      <div class="file-upload">
-        <span>통장 사본</span>
-        <div>
-          <i class="fa-solid fa-arrow-up-from-bracket"></i>
-          <span>파일 업로드하기(PDF)</span>
-        </div>
-      </div>
-      <div class="file-upload">
-        <span>신분증 사본</span>
-        <div>
-          <i class="fa-solid fa-arrow-up-from-bracket"></i>
-          <span>파일 업로드하기(PDF)</span>
-        </div>
-      </div>
+      <FileUploader title="통장 사본" @upload-file="uploadBankPaper" />
+      <FileUploader title="신분증 사본" @upload-file="uploadIdentification" />
       <div class="creator-btn">
-        <button>크리에이터 등록하기</button>
+        <button @click="registerCreator">크리에이터 등록하기</button>
       </div>
     </div>
   </div>
@@ -57,22 +44,94 @@
 <script>
 import CustomHeader from 'src/components/CustomHeader.vue';
 import CustomFooter from 'src/components/CustomFooter.vue';
-import { ref } from 'vue';
+import Dropdown from 'src/components/user/Dropdown.vue';
+import FileUploader from 'src/components/user/FileUploader.vue';
+import { reactive, ref } from 'vue';
+import axios from '../../axios';
 
 export default {
   components: {
     CustomHeader,
     CustomFooter,
+    Dropdown,
+    FileUploader,
   },
   setup() {
     const toCreator = ref(false);
     const clickCreator = () => {
       toCreator.value = true;
     };
+    const bankList = [
+      'KB 국민은행',
+      '신한은행',
+      '농협은행',
+      '카카오뱅크',
+      '우리은행',
+      '하나은행',
+      '대구은행',
+    ];
+    const creatorInfo = reactive({
+      creatorType: '',
+      bank: '',
+      accountNumber: '',
+    });
+    const formData = new FormData();
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'Access-Control-Allow-Origin': 'http://localhost:9000',
+        'Access-Control-Allow-Credentials': true,
+      },
+    };
+
+    const storeCategory = category => {
+      creatorInfo.creatorType = category;
+    };
+    const bankCategory = category => {
+      creatorInfo.bank = category;
+    };
+
+    const uploadBankPaper = file => {
+      formData.append('bankPaper', file);
+    };
+
+    const uploadIdentification = file => {
+      formData.append('identification', file);
+    };
+
+    const registerCreator = async () => {
+      const creatorDto = {
+        creatorType: creatorInfo.creatorType,
+        bank: creatorInfo.bank,
+        accountNumber: creatorInfo.accountNumber,
+      };
+
+      const json = JSON.stringify(creatorDto);
+      const blob = new Blob([json], { type: 'application/json' });
+      formData.append('creatorDto', blob);
+
+      for (let key of formData.keys()) {
+        console.log(key, ':', formData.get(key));
+      }
+
+      try {
+        const res = await axios.post('user/creator/register', formData, config);
+        console.log(res);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
     return {
       toCreator,
       clickCreator,
+      bankList,
+      storeCategory,
+      bankCategory,
+      creatorInfo,
+      uploadBankPaper,
+      uploadIdentification,
+      registerCreator,
     };
   },
 };
@@ -149,21 +208,6 @@ button {
   font-size: 0.9rem;
 }
 
-.drop-down > div {
-  background-color: white;
-  border: 1px solid #e4e5ec;
-  width: fit-content;
-  padding: 0.5em 0.8em;
-  border-radius: 6px;
-  margin: 0.5em 0 2.5em 0;
-  cursor: pointer;
-}
-
-.drop-down > div span:first-child {
-  font-weight: 500;
-  margin-right: 0.5em;
-}
-
 .account-number {
   display: flex;
   flex-direction: column;
@@ -185,21 +229,6 @@ button {
 
 .account-number input:focus {
   outline: none;
-}
-
-.file-upload div {
-  background-color: white;
-  padding: 0.8em;
-  margin: 0.5em 0 2.5em 0;
-  border-radius: 6px;
-  color: #737584;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.file-upload div i {
-  margin-right: 0.5em;
 }
 
 .creator-btn {
