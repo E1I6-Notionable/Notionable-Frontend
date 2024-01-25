@@ -15,13 +15,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { defineProps, ref, defineEmits } from 'vue';
 
 const props = defineProps({
   editor: {
     type: Object,
   },
+  handleImageUpload: {
+    type: Function,
+  },
 });
+
+const emit = defineEmits(['handleImageUpload']);
 
 const handleImageMenu = () => {
   const input = document.createElement('input');
@@ -37,6 +42,7 @@ const handleImageUpload = event => {
   if (file) {
     const imageUrl = URL.createObjectURL(file);
     props.editor.chain().focus().setImage({ src: imageUrl }).run();
+    emit('handleImageUpload', { src: imageUrl, file: file });
   }
 };
 
@@ -113,7 +119,7 @@ const checkFileExtension = (file, allowedExtensions) => {
   width: 50px;
   padding: 10px;
   margin-left: 95%;
-  background-color:#fafafc;
+  background-color: #fafafc;
   position: absolute;
   & button {
     margin-bottom: 8px; /* Add more padding between icons */

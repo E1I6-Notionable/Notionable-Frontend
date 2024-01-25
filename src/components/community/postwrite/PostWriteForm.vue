@@ -33,7 +33,7 @@
           @change="updateTitle"
         />
         <q-separator />
-        <TiptapEditor v-model="contentModel" />
+        <TiptapEditor v-model="contentModel" :handleImageUpload="handleImageUpload"/>
       </q-card-section>
       <q-separator />
       <q-card-actions align="left">
@@ -61,17 +61,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, defineProps, defineEmits } from 'vue';
 import TiptapEditor from 'src/components/community/postwrite/TipTapEditor.vue';
 import axios from 'axios';
-import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
+import { elementFromString } from '@tiptap/vue-3';
 
-const $q = useQuasar();
 const value = ref('카테고리');
 const list = ref(['자유게시판', '꿀팁 공유', '질문있어요']);
 const visible = ref(false);
 const router = useRouter();
+const imgFiles = ref([]);
+
 
 const toggle = () => {
   visible.value = !visible.value;
@@ -111,34 +112,57 @@ const updateTitle = () => {
   emit('update:title', titleModel.value);
 };
 
+
+const handleImageUpload = async (file) => {
+  imgFiles.value.push(file);
+};
+
+
+
 const handleSubmit = async () => {
-  if (!contentModel.value) {
-    $q.notify('내용을 작성하세요.');
+  if (!contentModel.value || !titleModel.value || !value.value) {
+    alert('형식을 채워주세요');
     return;
   }
+
+  if(value.value == '자유게시판'){
+    value.value = "자유";
+  }else if(value.value == '꿀팁 공유'){
+    value.value = "꿀팁";
+  }else{
+    value.value ="질문";
+  }
+
   const token = localStorage.getItem('accessToken');
-  console.log("제목", titleModel.value, "카테고리", value.value, "내용", contentModel.value);
-  console.log(token);
+  const formdata = new FormData();
+  const communityReq = {
+    title: titleModel.value,
+    content: contentModel.value,
+    category: value.value,
+  }
+  const json = JSON.stringify(communityReq);
+  const blob = new Blob([json], {type: 'application/json'});
+
+  formdata.append('communityReq', blob);
+
+  if (imgFiles.value.length !== 0) {
+    for (let i = 0; i < imgFiles.value.length; i++) {
+      formdata.append('files', imgFiles.value[i]);
+    }
+  }
+
   try {
     const response = await axios.post(
       'http://13.209.29.227:8080/posts/add',
-      {
-        title: titleModel.value,
-        category: value.value,
-        content: contentModel.value,
-      },
+      formdata,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
         },
       },
     );
     console.log('Post saved successfully:', response.data);
-    emit('submit');
-    const routeToNavigate = '/posts/all';
-    router.push(routeToNavigate);
-
+    router.push('posts/all');
   } catch (error) {
     console.error('Error saving post:', error);
     if (error.response) {
@@ -170,12 +194,6 @@ const handleSubmit = async () => {
       position: absolute;
       right: 5px;
       top: 13px;
-      transform: rotateZ(0deg) translateY(0px);
-      transition-duration: 0.3s;
-      transition-timing-function: cubic-bezier(0.59, 1.39, 0.37, 1.01);
-    }
-    .expanded {
-      transform: rotateZ(180deg) translateY(2px);
     }
     .label {
       display: block;

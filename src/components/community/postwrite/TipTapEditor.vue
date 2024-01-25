@@ -1,12 +1,16 @@
 <template>
   <q-card class="tiptap" flat>
-    <TiptapEditorMenu :editor="editor" class="tiptap-editor-menu" />
+    <TiptapEditorMenu
+      :editor="editor"
+      class="tiptap-editor-menu"
+      :handleImageUpload="handleImageUpload"
+    />
     <editor-content class="editor__content" :editor="editor" />
   </q-card>
 </template>
 
 <script setup>
-import { watch } from 'vue';
+import { ref, watch, defineProps, defineEmits } from 'vue';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -40,21 +44,24 @@ const editor = useEditor({
     emit('update:modelValue', editor.value.getHTML());
   },
 });
+
 watch(
   () => props.modelValue,
   value => {
     const isSame = editor.value.getHTML() === value;
-    if (isSame) {
-      return;
+    if (!isSame) {
+      editor.value.commands.setContent(value, false);
     }
-    editor.value.commands.setContent(value, false);
   },
 );
+
+const handleImageUpload = ({ src, file }) => {
+  files.value.push(file);
+};
 </script>
+
 <style lang="scss" src="src/css/tiptap.scss"></style>
 <style lang="scss">
-
-
 .ProseMirror p.is-editor-empty:first-child::before {
   color: #adb5bd;
   content: attr(data-placeholder);
