@@ -5,6 +5,7 @@ export default {
     name: '',
     phoneNumber: '',
     email: '',
+    profile: '',
   },
   mutations: {
     USER_STATUS(state, payload) {
@@ -19,6 +20,9 @@ export default {
     USER_EMAIL(state, payload) {
       state.email = payload;
     },
+    USER_PROFILE(state, payload) {
+      state.profile = payload;
+    },
   },
   actions: {
     loginUser({ commit }, payload) {
@@ -26,6 +30,7 @@ export default {
       commit('USER_NAME', payload.name);
       commit('USER_NUMBER', payload.phoneNumber);
       commit('USER_EMAIL', payload.email);
+      commit('USER_PROFILE', payload.profile);
     },
   },
 };

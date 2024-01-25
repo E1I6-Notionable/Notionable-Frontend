@@ -1,7 +1,7 @@
 <template>
   <div>
     <CustomHeader page="template" />
-    <div class="template-page">
+    <div class="template-page" v-if="!loading">
       <div class="template-detail">
         <img class="template-img" :src="templateDesc.thumbnail" />
         <div class="template-detail-desc">
@@ -33,9 +33,10 @@ import CustomFooter from '../../components/CustomFooter.vue';
 import PaymentFloating from 'src/components/template/PaymentFloating.vue';
 import TemplateNotice from '../../components/template/TemplateNotice.vue';
 import TemplateReview from '../../components/template/TemplateReview.vue';
-import { ref } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import axios from '../../axios';
 import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 
 export default {
   name: 'TemplatePage',
@@ -49,6 +50,8 @@ export default {
   setup() {
     const route = useRoute();
     const id = route.params.id;
+    const store = useStore();
+    const loading = ref(false);
 
     const categoryList = [
       '상품상세',
@@ -56,23 +59,16 @@ export default {
       '판매자 정보',
       '문의 및 규정',
     ];
-    const currentCategory = ref('상품상세');
+    const writeReview = computed(() => store.state.template.writeReview);
+    const reviewView = computed(() => store.state.review.reviewView);
+    const currentCategory = ref(
+      writeReview.value || reviewView.value ? '구매후기' : '상품상세',
+    );
     const clickCategory = category => {
       currentCategory.value = category;
     };
 
-    const templateDesc = ref({
-      templateId: 0,
-      nickName: '',
-      profile: '',
-      thumbnail: '',
-      title: '',
-      category: '',
-      price: 0,
-      content: '',
-      imageUrls: [''],
-      createdAt: '',
-    });
+    const templateDesc = ref(null);
 
     const config = {
       headers: {
@@ -83,17 +79,29 @@ export default {
     };
 
     const getTemplateDetail = async () => {
-      const res = await axios.get(`template/detail/${id}`, config);
-      templateDesc.value = res.data.data;
+      loading.value = true;
+      try {
+        const res = await axios.get(`template/detail/${id}`, config);
+        console.log(res);
+        templateDesc.value = res.data.data;
+        loading.value = false;
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     getTemplateDetail();
+
+    onUnmounted(() => {
+      store.dispatch('template/clickWriteReview', { writeReview: false });
+    });
 
     return {
       categoryList,
       currentCategory,
       clickCategory,
       templateDesc,
+      loading,
     };
   },
 };

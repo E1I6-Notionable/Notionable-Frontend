@@ -1,45 +1,60 @@
 <template>
-  <div class="profile">
-    <img src="/img/icon/default-profile.png" />
-    <div class="profile-info">
-      <div class="profile-title">
-        <h4>{{ userInfo.nickName }}</h4>
-        <span>구매자</span>
+  <div v-if="!loading">
+    <div class="profile">
+      <div class="profile-img">
+        <img
+          :src="
+            userInfo.profile === ''
+              ? '/img/icon/default-profile.png'
+              : userInfo.profile
+          "
+        />
       </div>
-      <div class="picture-btn">
-        <i class="fa-solid fa-camera"></i>
-        <span>사진 변경</span>
+      <div class="profile-info">
+        <div class="profile-title">
+          <h4>{{ userInfo.nickName }}</h4>
+          <span>구매자</span>
+        </div>
+        <label htmlFor="input-file">
+          <input
+            class="img-input"
+            type="file"
+            accept="image/*"
+            id="input-file"
+            @change="saveImgFile"
+          />
+          <div class="picture-btn">
+            <i class="fa-solid fa-camera"></i>
+            <span>사진 변경</span>
+          </div>
+        </label>
       </div>
     </div>
-  </div>
-  <div class="update-input">
-    <CustomInput
-      name="닉네임"
-      placeholder="닉네임을 입력해주세요."
-      type="text"
-      v-model:value="nameText"
-      @update-value="updateName"
-      :icon="false"
-    />
-    <CustomInput
-      name="이메일"
-      placeholder="이메일을 입력해주세요."
-      type="email"
-      v-model:value="emailText"
-      @update-value="updateEmail"
-      :icon="false"
-    />
-    <CustomInput
-      name="휴대폰 번호"
-      placeholder="휴대폰 번호를 입력해주세요."
-      type="text"
-      v-model:value="numberText"
-      @update-value="updateNumber"
-      :icon="false"
-    />
-  </div>
-  <div class="update-btn">
-    <button @click="updateMyInfo">수정 완료</button>
+    <div class="update-input">
+      <CustomInput
+        name="닉네임"
+        placeholder="닉네임을 입력해주세요."
+        type="text"
+        v-model:value="nameText"
+        @update-value="updateName"
+        :icon="false"
+      />
+      <CustomInput
+        name="이메일"
+        v-model:value="userInfo.email"
+        :icon="false"
+        disabled
+      />
+      <CustomInput
+        name="휴대폰 번호"
+        v-model:value="userInfo.phoneNumber"
+        :icon="false"
+        disabled
+      />
+    </div>
+    <div class="update-btn">
+      <button @click="updateMyInfo">수정 완료</button>
+    </div>
   </div>
 </template>
 
@@ -53,45 +68,35 @@ export default {
   },
   setup() {
     const nameText = ref('');
-    const emailText = ref('');
-    const numberText = ref('');
-    const userInfo = ref({
-      userId: 1,
-      email: '',
-      password: '',
-      userType: 0,
-      role: null,
-      nickName: '',
-      profile: '',
-      phoneNumber: '',
-    });
+    const userInfo = ref(null);
+    const loading = ref(false);
+    const formData = new FormData();
+    const imgFile = ref('');
 
     const updateName = name => {
       nameText.value = name;
     };
 
-    const updateEmail = email => {
-      emailText.value = email;
-    };
-
-    const updateNumber = number => {
-      numberText.value = number;
-    };
-
-    const accessToken = localStorage.getItem('accessToken');
     const config = {
       headers: {
-        accessToken,
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'Access-Control-Allow-Origin': 'http://localhost:9000',
+        'Access-Control-Allow-Credentials': true,
       },
     };
 
     const getMyInfo = async () => {
+      loading.value = true;
       try {
-        //const res = await axios.get('user/my-profile', config);
-        //userInfo.value = res.data.data;
+        const res = await axios.get('user/my-profile', config);
+        console.log(res);
+
+        userInfo.value = res.data.data;
+        if (userInfo.value.phoneNumber === null)
+          userInfo.value.phoneNumber = '';
         nameText.value = userInfo.value.nickName;
-        emailText.value = userInfo.value.email;
-        numberText.value = userInfo.value.phoneNumber;
+
+        loading.value = false;
       } catch (err) {
         console.log(err);
       }
@@ -99,16 +104,45 @@ export default {
 
     getMyInfo();
 
+    const saveImgFile = e => {
+      if (e.target.files) {
+        const file = e.target.files[0];
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = () => {
+          imgFile.value - reader.result;
+
+          reader.result === null || reader.result === ''
+            ? (userInfo.value.profile = '')
+            : (userInfo.value.profile = reader.result.toString());
+        };
+
+        if (file !== undefined) {
+          formData.append('newProfile', file);
+        }
+      }
+    };
+
     const updateMyInfo = async () => {
+      const modifyUserDto = {
+        nickName: nameText.value,
+      };
+      const json = JSON.stringify(modifyUserDto);
+      const blob = new Blob([json], { type: 'application/json' });
+
+      formData.append('modifyUserDto', blob);
+
       try {
-        await axios.patch(
+        const res = await axios.patch(
           'user/my-profile/modify',
-          {
-            nickName: nameText.value,
-          },
+          formData,
           config,
         );
+        console.log(res);
         alert('수정이 완료되었습니다.');
+        userInfo.value.nickName = res.data.data.nickName;
       } catch (err) {
         console.log(err);
       }
@@ -116,13 +150,11 @@ export default {
 
     return {
       nameText,
-      emailText,
-      numberText,
       updateName,
-      updateEmail,
-      updateNumber,
       userInfo,
       updateMyInfo,
+      loading,
+      saveImgFile,
     };
   },
 };
@@ -134,9 +166,18 @@ export default {
   align-items: center;
 }
 
-.profile img {
+.profile-img {
   width: 140px;
+  height: 140px;
+  border-radius: 100%;
+  overflow: hidden;
   margin-right: 3em;
+  display: flex;
+  justify-content: center;
+}
+
+.profile img {
+  object-fit: cover;
 }
 
 .profile-info {
@@ -173,6 +214,19 @@ export default {
 
 .picture-btn i {
   margin-right: 0.5em;
+}
+
+.img-input[type='file'] {
+  display: none;
+}
+
+.preview-img {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 2em;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .update-input {

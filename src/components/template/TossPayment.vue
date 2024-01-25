@@ -89,7 +89,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .modal-container {
   position: relative;
   top: 50%;
@@ -100,5 +100,18 @@ export default {
   border-radius: 10px;
   padding: 20px;
   box-sizing: border-box;
+  text-align: center;
+}
+
+#payment-button {
+  background-color: #0064ff;
+  color: white;
+  border: none;
+  padding: 0.8em;
+  font-weight: 500;
+  width: 250px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 2em;
 }
 </style>

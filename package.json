@@ -10,7 +10,8 @@
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
-    "build": "quasar build"
+    "build": "quasar build",
+    "deploy": "vercel"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
@@ -23,10 +24,10 @@
     "@tiptap/vue-3": "^2.1.16",
     "@tosspayments/payment-widget-sdk": "^0.10.2",
     "axios": "^1.6.5",
-    "dayjs": "^1.11.10",
-    "dompurify": "^3.0.8",
+    "dayjs": "^2.0.0-alpha.2",
     "pinia": "^2.1.7",
     "quasar": "^2.6.0",
+    "sass": "^1.33.0",
     "uuid": "^9.0.1",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0",

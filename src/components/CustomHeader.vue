@@ -1,18 +1,22 @@
 <template>
   <header>
     <div class="header-top">
-      <router-link to="/">
-        <img src="/img/logo_horizontal.png" />
-      </router-link>
-      <div class="search-container">
-        <input
-          :placeholder="`원하시는 ${
-            page === 'template'
-              ? '템플릿을 검색해보세요.'
-              : '검색어를 입력하세요.'
-          }`"
-        />
-        <img src="/img/icon/search.png" />
+      <div class="header-logo">
+        <router-link to="/">
+          <img src="/img/logo_horizontal.png" />
+        </router-link>
+        <div class="search-container">
+          <input
+            :placeholder="`원하시는 ${
+              page === 'template'
+                ? '템플릿을 검색해보세요.'
+                : '검색어를 입력하세요.'
+            }`"
+            v-model="searchText"
+            @keyup.enter="getSearchResult"
+          />
+          <img src="/img/icon/search.png" @click="getSearchResult" />
+        </div>
       </div>
       <div class="login-btn" v-if="!login">
         <router-link to="/login"><span>로그인</span></router-link>
@@ -35,13 +39,13 @@
     </div>
     <div v-if="page !== 'creator'" class="nav">
       <div>
-        <router-link to="/freetemplate">
-          <div :class="{ 'nav-clicked': url.includes('freetemplate') }">
+        <router-link to="/template/free/none">
+          <div :class="{ 'nav-clicked': params.type === 'free' }">
             무료 템플릿
           </div>
         </router-link>
-        <router-link to="/paytemplate">
-          <div :class="{ 'nav-clicked': url.includes('paytemplate') }">
+        <router-link to="/template/paid/none">
+          <div :class="{ 'nav-clicked': params.type === 'paid' }">
             유료 템플릿
           </div>
         </router-link>
@@ -54,9 +58,10 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import axios from './../axios';
 export default {
   props: {
     page: {
@@ -67,8 +72,11 @@ export default {
     const login = computed(() => store.state.user.login);
     const url = window.location.href;
     const router = useRouter();
+    const route = useRoute();
     const store = useStore();
     const user = computed(() => store.state.user);
+    const searchText = ref('');
+    const params = computed(() => route.params);
 
     const getLoginStatus = () => {
       if (
@@ -107,7 +115,30 @@ export default {
       store.dispatch('user/loginUser', {
         login: false,
       });
+      window.location.replace('/');
     };
+
+    const getSearchResult = async () => {
+      router.replace(`/template/none/${searchText.value}`);
+
+      const params = {
+        keyword: searchText.value,
+      };
+
+      try {
+        const res = await axios.get('template/filter', {
+          params,
+        });
+        console.log(res);
+        store.dispatch('template/addList', { templateList: res.data.data });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    watch(params, () => {
+      if (params.value.search === 'none') searchText.value = '';
+    });
 
     return {
       login,
@@ -116,6 +147,9 @@ export default {
       toMypage,
       handleLogout,
       user,
+      searchText,
+      getSearchResult,
+      params,
     };
   },
 };
@@ -131,6 +165,13 @@ header {
   display: flex;
   align-items: center;
   padding: 3em 6em;
+  justify-content: space-between;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
 }
 
 .header-top img {
@@ -141,6 +182,7 @@ header {
 .search-container {
   position: relative;
   margin-left: 4em;
+  width: 100%;
 }
 
 .search-container input {
@@ -148,8 +190,9 @@ header {
   padding: 0.4em 1.2em;
   border-radius: 11px;
   box-sizing: border-box;
-  width: 600px;
   color: #313440;
+  width: 100%;
+  min-width: 600px;
 }
 
 .search-container input::placeholder {

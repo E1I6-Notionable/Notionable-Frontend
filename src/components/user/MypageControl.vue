@@ -24,6 +24,26 @@
           >비밀번호 수정</span
         ></router-link
       >
+      <router-link to="/mypage/my-review"
+        ><span
+          :class="
+            url.includes('my-review')
+              ? 'category-click'
+              : 'mypage-category-title'
+          "
+          >내가 쓴 리뷰</span
+        ></router-link
+      >
+      <router-link to="/mypage/my-scrap"
+        ><span
+          :class="
+            url.includes('my-scrap')
+              ? 'category-click'
+              : 'mypage-category-title'
+          "
+          >내가 스크랩한 글</span
+        ></router-link
+      >
     </div>
     <button class="apply-creator-btn" @click="toCreator">
       크리에이터 신청✨
