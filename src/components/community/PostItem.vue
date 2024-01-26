@@ -22,7 +22,7 @@
         </div>
         <div class="post-content">
           <div :class="{ 'content-container': post.thumbnail }">
-            <p>{{ post.content }}</p>
+            <p v-html="post.content"></p>
           </div>
           <div v-if="post.thumbnail" class="thumbnail-container">
             <img :src="post.thumbnail" alt="Thumbnail" class="thumbnail" />

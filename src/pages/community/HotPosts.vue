@@ -42,6 +42,8 @@ export default {
   methods: {
     async fetchPosts() {
       try {
+        const token = localStorage.getItem('accessToken');
+
         const { data } = await axios.get(
           'http://13.209.29.227:8080/posts/hot',
           {
@@ -50,6 +52,9 @@ export default {
               filter: this.filter,
               page: this.currentPage,
               size: this.pageSize,
+            },
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
           },
         );
@@ -64,6 +69,7 @@ export default {
             commentCount: item.communityComment,
             createdAt: item.createdAt,
             thumbnail: item.thumbnail,
+            existLike: item.existLike,
             label:index+1,
           }));
 

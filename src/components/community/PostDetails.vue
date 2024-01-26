@@ -2,7 +2,14 @@
   <div>
     <CustomHeader page="/posts/all" />
     <div class="community-page">
-      <div class="post-title">
+      <div v-if="postEditing" style="margin-bottom: 20px">
+        <q-input
+          borderless
+          v-model="editedTitle"
+          style="width: 100%; font-size: 22px; color: #313440"
+        />
+      </div>
+      <div v-else class="post-title">
         <h5>{{ post.title }}</h5>
       </div>
       <div class="row post-info">
@@ -29,24 +36,122 @@
         </div>
       </div>
       <q-separator />
-      <div class="post-content">
-        <p>{{ post.content }}</p>
-        <div class="images">
-          <div v-for="(imageUrl, index) in post.imageUrls" :key="index">
-            <img
-              :src="imageUrl"
-              style="height: 200px; width: 200px; margin-right: 25px"
-            />
-          </div>
+      <div v-if="postEditing" class="post-content">
+        <q-input
+          borderless
+          v-model="editedContent"
+          style="width: 100%; font-size: 20px; color: #313440"
+          type="textarea"
+        />
+      </div>
+      <p v-else class="post-content" v-html="post.content"></p>
+      <div class="images">
+        <div v-for="(imageUrl, index) in post.imageUrls" :key="index">
+          <img
+            :src="imageUrl"
+            style="height: 200px; width: 200px; margin-right: 25px"
+          />
         </div>
+      </div>
+      <div v-if="isWriter" style="margin-bottom: 10px" align="right">
+        <q-btn
+          v-if="postEditing"
+          flat
+          label="완료"
+          style="background-color: #f7f8fc; border-radius: 10px"
+          @click="saveEdit"
+        />
+        <q-btn
+          v-else
+          flat
+          label="수정"
+          style="background-color: #f7f8fc; border-radius: 10px"
+          @click="toEdit"
+        />
+        <q-btn
+          v-if="postEditing"
+          flat
+          label="취소"
+          style="
+            background-color: #f7f8fc;
+            border-radius: 10px;
+            margin-left: 5px;
+          "
+          @click="cancelEdit"
+        />
+        <q-btn
+          v-else
+          flat
+          label="삭제"
+          style="
+            background-color: #f7f8fc;
+            border-radius: 10px;
+            margin-left: 5px;
+          "
+          @click="confirmDelete = true"
+        />
+        <q-dialog v-model="confirmDelete" persistent>
+          <div
+            style="
+              width: 300px;
+              height: 150px;
+              background-color: white;
+              border-radius: 8px;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+            "
+          >
+            <div
+              style="
+                text-align: center;
+                padding-top: 45px;
+                font-size: 14px;
+                font-weight: 600;
+              "
+            >
+              게시물을 삭제하시겠습니까?
+            </div>
+            <div style="display: flex">
+              <q-btn
+                flat
+                label="예"
+                @click="deletePost"
+                style="
+                  width: 50%;
+                  background-color: #081829;
+                  color: #fafafc;
+                  border-radius: 0px;
+                  font-size: 13px;
+                "
+              />
+              <q-btn
+                flat
+                label="아니오"
+                v-close-popup
+                style="
+                  width: 50%;
+                  background-color: #fafafc;
+                  color: #081829;
+                  border-radius: 0px;
+                  font-size: 13px;
+                "
+              />
+            </div>
+          </div>
+        </q-dialog>
       </div>
 
       <q-separator />
       <div class="row post-info">
         <div class="flex-center like">
           <q-btn class="full-width" flat dense @click="toggleLike">
-            <div class="like-img" :class="{ isLiked: post.isLiked }">
-              <img src="../../../public/img/icon/like.png" />
+            <div class="like-img">
+              <img
+                v-if="post.existLike"
+                src="../../../public/img/icon/like_red.png"
+              />
+              <img v-else src="../../../public/img/icon/like.png" />
             </div>
             <span
               class="text-black q-mb-lg q-ml-xs text-body2"
@@ -79,11 +184,13 @@
           :dense="dense"
         >
           <template v-slot:prepend>
+            <img v-if="userProfile" :src="userProfile" style="width: 25px" />
             <img
+              v-else
               src="../../../public/img/icon/default-profile.png"
               style="width: 25px"
             />
-            <p class="comment-writer">{{ commentWriter }}</p>
+            <p class="comment-writer">{{ userName }}</p>
           </template>
           <template v-slot:append>
             <q-btn
@@ -111,6 +218,9 @@ import CommentList from '../../components/community/comment/CommentList.vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { useQuasar } from 'quasar';
+import { computed, ref } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 export default {
   components: {
@@ -124,20 +234,41 @@ export default {
       default: undefined,
     },
   },
+  setup() {
+    const store = useStore();
+    const user = computed(() => store.state.user);
+    const postEditing = ref(false);
+    const router = useRouter();
+
+    return {
+      user,
+      postEditing,
+      router,
+    };
+  },
   data() {
     return {
       post: {},
       commentText: '',
-      commentWriter: '서은',
       comments: [],
+      editedTitle: '',
+      editedContent: '',
+      originalContent: '',
+      confirmDelete: false,
     };
   },
   methods: {
     async fetchData() {
       try {
         const postId = this.$route.params.id;
+        const token = localStorage.getItem('accessToken');
         const postResponse = await axios.get(
           `http://13.209.29.227:8080/posts/${postId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         );
 
         if (postResponse.data.success) {
@@ -149,9 +280,10 @@ export default {
             likeCount: postData.communityLike,
             commentCount: postData.communityComment,
             imageUrls: postData.imageUrls,
-            isLiked: false,
+            existLike: postData.existLike,
+            writerName: postData.username,
+            category: postData.category,
           };
-          console.log(postId);
 
           const commentResponse = await axios.get(
             `http://13.209.29.227:8080/comments/${postId}`,
@@ -203,12 +335,119 @@ export default {
       }
     },
 
-    toggleLike() {
-      this.post.isLiked = !this.post.isLiked;
-      if (this.post.isLiked) {
-        this.post.likeCount++;
+    toEdit() {
+      this.postEditing = true;
+      this.editedTitle = this.post.title;
+      this.editedContent = this.post.content;
+      this.originalContent = this.post.content;
+    },
+
+    cancelEdit() {
+      this.postEditing = false;
+    },
+
+    isWriter() {
+      if (userName == this.writerName) {
+        return true;
       } else {
-        this.post.likeCount--;
+        return false;
+      }
+    },
+
+    async saveEdit() {
+      try {
+        const token = localStorage.getItem('accessToken');
+        const postId = this.$route.params.id;
+
+        const formdata = new FormData();
+        const communityReq = {
+          title: this.editedTitle,
+          content: this.editedContent,
+          category: this.post.category,
+        };
+        const json = JSON.stringify(communityReq);
+        const blob = new Blob([json], { type: 'application/json' });
+
+        if (this.post.imageUrls.length !== 0) {
+          for (let i = 0; i < this.post.imageUrls.length; i++) {
+            formdata.append('files', this.post.imageUrls[i]);
+          }
+        }
+        formdata.append('communityReq', blob);
+
+        const response = await axios.put(
+          `http://13.209.29.227:8080/posts/${postId}`,
+          formdata,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (response.data.success) {
+          this.originalContent = this.editedContent;
+          this.postEditing = false;
+          location.reload();
+        } else {
+          console.error('Failed to update comment:', response.data.message);
+        }
+      } catch (error) {
+        console.error('Error updating comment:', error);
+      }
+    },
+
+    async deletePost() {
+      const token = localStorage.getItem('accessToken');
+      const postId = this.$route.params.id;
+
+      try {
+        const response = await axios.delete(
+          `http://13.209.29.227:8080/posts/${postId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        if (response.data.success) {
+          this.router.push('/posts/all');
+        } else {
+          console.error('Failed to delete comment:', response.data.message);
+        }
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+      }
+    },
+
+    async toggleLike() {
+      try {
+        console.log(this.post.existLike);
+        this.post.existLike = !this.post.existLike;
+        this.post.likeCount += this.post.existLike ? 1 : -1;
+
+        const postId = this.$route.params.id;
+        const token = localStorage.getItem('accessToken');
+        console.log(this.post.existLike);
+
+        await axios.post(
+          `http://13.209.29.227:8080/posts/like/${postId}`,
+          {
+            isLiked: this.post.existLike,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+      } catch (error) {
+        console.error('Error toggling like:', error);
+
+        if (error.response) {
+          console.error('Response data:', error.response.data);
+        }
       }
     },
     submitComment() {
@@ -237,7 +476,7 @@ export default {
         .then(response => {
           if (response.data.success) {
             this.commentText = '';
-            this.fetchData(); 
+            this.fetchData();
           } else {
             console.error('Comment submission failed:', response.data.message);
           }
@@ -247,7 +486,15 @@ export default {
         });
     },
   },
-  computed: {},
+
+  computed: {
+    userName() {
+      return this.user.name;
+    },
+    userProfile() {
+      return this.user.profile;
+    },
+  },
   mounted() {
     this.fetchData();
   },
@@ -302,7 +549,8 @@ export default {
 }
 
 .post-content {
-  margin: 70px 0px;
+  margin-top: 70px;
+  margin-bottom: 40px;
   font-size: 20px;
   font-weight: 550;
   color: #313440;
@@ -320,8 +568,8 @@ export default {
   font-size: 18px;
   font-weight: 600;
   color: black;
-  padding-top: 19%;
-  padding-left: 4px;
+  padding-top: 11%;
+  padding-left: 6px;
 }
 
 .comment-upload {
