@@ -13,14 +13,6 @@ export default {
     const url = window.location.href;
     const route = useRoute();
 
-    const config = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        'Access-Control-Allow-Origin': 'http://localhost:9000',
-        'Access-Control-Allow-Credentials': true,
-      },
-    };
-
     const sendCode = socialType => {
       router
         .isReady()
@@ -58,56 +50,12 @@ export default {
         });
     };
 
-    const submitEmail = async () => {
-      const templateId = route.params.id;
-
-      try {
-        const res = await axios.get(`template/url-mail/${templateId}`, config);
-        console.log(res);
-        if (res.data.code === 200) {
-          router.replace('/mypage');
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    const confirmPayments = () => {
-      router
-        .isReady()
-        .then(async () => {
-          try {
-            const res = await axios.post(
-              'payments/confirm',
-              {
-                orderId: route.query.orderId,
-                amount: route.query.amount,
-                paymentKey: route.query.paymentKey,
-                templateId: route.params.id,
-              },
-              config,
-            );
-            console.log(res);
-            if (res.data.code === 200) {
-              submitEmail();
-            }
-          } catch (err) {
-            console.log(err);
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    };
-
     if (url.includes('kakao')) {
       sendCode('kakao');
     } else if (url.includes('naver')) {
       sendCode('naver');
     } else if (url.includes('google')) {
       sendCode('google');
-    } else if (url.includes('paymentType')) {
-      confirmPayments();
     }
   },
 };
