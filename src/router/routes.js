@@ -21,6 +21,10 @@ const routes = [
         component: () => import('pages/signup/LoginPageNext.vue'),
       },
       {
+        path: 'signup/success/:name',
+        component: () => import('src/components/signup/SignUpSuccess.vue'),
+      },
+      {
         path: 'findpassword',
         component: () => import('pages/signup/FindPassword.vue'),
       },

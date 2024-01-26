@@ -28,8 +28,13 @@
       {{ parseCreatedAt }}
     </div>
     <div class="review-imgs" v-if="review.imageUrls.length !== 0">
-      <div v-for="image in review.imageUrls" :key="image">
+      <div v-for="(image, i) in review.imageUrls" :key="image">
         <img :src="image" />
+        <i
+          v-if="updateView"
+          class="fa-solid fa-circle-xmark"
+          @click="deleteImg(i)"
+        ></i>
       </div>
     </div>
     <div class="reveiw-content">

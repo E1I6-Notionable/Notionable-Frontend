@@ -39,6 +39,9 @@ import axios from '../../axios';
 import { ref, watch } from 'vue';
 import TossPayment from './TossPayment.vue';
 import InquireModal from './InquireModal.vue';
+import { v4 as uuidv4 } from 'uuid';
+import { useRouter } from 'vue-router';
+
 export default {
   components: {
     TossPayment,
@@ -59,6 +62,7 @@ export default {
     };
     const tossPaymentView = ref(false);
     const inquireModalView = ref(false);
+    const router = useRouter();
 
     const clickInquire = () => {
       inquireModalView.value = !inquireModalView.value;
@@ -84,11 +88,47 @@ export default {
       }
     };
 
+    const submitEmail = async () => {
+      try {
+        const res = await axios.get(
+          `template/url-mail/${templateDesc.templateId}`,
+          config,
+        );
+        console.log(res);
+        if (res.data.code === 200) {
+          router.replace('/mypage');
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    const confirmPayments = async () => {
+      try {
+        const res = await axios.post(
+          'payments/confirm',
+          {
+            orderId: uuidv4(),
+            amount: 0,
+            paymentKey: uuidv4(),
+            templateId: templateDesc.templateId,
+          },
+          config,
+        );
+        console.log(res);
+        if (res.data.code === 200) {
+          submitEmail();
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     const clickPayment = () => {
-      if (templateDesc.price === 0) {
-        alert('결제가 완료되었습니다.');
-      } else if (templateDesc.paid) {
+      if (templateDesc.paid) {
         alert('이미 결제한 템플릿입니다.');
+      } else if (templateDesc.price === 0) {
+        confirmPayments();
       } else {
         tossPaymentView.value = true;
       }
