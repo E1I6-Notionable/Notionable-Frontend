@@ -62,6 +62,7 @@
 import { ref } from 'vue';
 import CustomInput from '../CustomInput.vue';
 import axios from '../../axios';
+import { useStore } from 'vuex';
 export default {
   components: {
     CustomInput,
@@ -72,6 +73,7 @@ export default {
     const loading = ref(false);
     const formData = new FormData();
     const imgFile = ref('');
+    const store = useStore();
 
     const updateName = name => {
       nameText.value = name;
@@ -141,8 +143,16 @@ export default {
           config,
         );
         console.log(res);
-        alert('수정이 완료되었습니다.');
-        userInfo.value.nickName = res.data.data.nickName;
+        if (res.data.code === 200) {
+          alert('수정이 완료되었습니다.');
+          userInfo.value.nickName = res.data.data.nickName;
+          store.dispatch('user/loginUser', {
+            ...store.state.user,
+            name: nameText.value,
+            profile: res.data.data.profile,
+          });
+          window.location.reload();
+        }
       } catch (err) {
         console.log(err);
       }
