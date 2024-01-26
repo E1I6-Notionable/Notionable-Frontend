@@ -40,7 +40,12 @@ export default {
   components: {
     ReviewWriteBtn,
   },
-  setup() {
+  props: {
+    userType: {
+      type: String,
+    },
+  },
+  setup({ userType }) {
     const purchaseList = ref([]);
     const router = useRouter();
     const store = useStore();
@@ -55,7 +60,12 @@ export default {
       };
 
       try {
-        const res = await axios.get('payments/buying', config);
+        let res;
+        if (userType === 'user') {
+          res = await axios.get('payments/buying', config);
+        } else {
+          res = await axios.get('payments/selling', config);
+        }
         console.log(res);
         purchaseList.value = res.data.data;
       } catch (err) {

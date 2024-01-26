@@ -1,6 +1,10 @@
 <template>
   <div class="input-container">
-    <span>{{ name }}</span>
+    <span
+      class="title"
+      :class="{ 'title-large': page === 'upload-template' }"
+      >{{ name }}</span
+    >
     <div>
       <input
         :placeholder="placeholder"
@@ -38,6 +42,9 @@ export default {
       type: String,
       required: true,
     },
+    page: {
+      type: String,
+    },
   },
   setup(props, { emit }) {
     const currentType = ref(props.type);
@@ -69,10 +76,15 @@ export default {
   margin-top: 1.5em;
 }
 
-.input-container > span {
+.title {
   color: #313440;
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.title-large {
+  font-size: 1.1rem;
+  color: black;
 }
 
 input {

@@ -1,26 +1,98 @@
 <template>
+  <h4 class="inquiry-history-title">문의 내역</h4>
+  <div class="inquiry-history-subtitle">
+    <span>상담제목</span>
+    <div class="answer-existence">
+      <span>작성일</span>
+      <span>답변유무</span>
+    </div>
+  </div>
   <div
-    class="inquiry-history-list"
-    v-for="inquiry in inquiryList"
+    v-for="(inquiry, index) in inquiryList"
     :key="inquiry.inquiry.inquiry_id"
+    class="inquiry-history-list"
+    :class="{
+      border:
+        index === inquiryList.length - 1 ||
+        (click.id === inquiry.inquiry.inquiry_id && click.click),
+    }"
   >
     <div class="inquiry-history">
-      <div class="inquiry-history-title">
-        <img src="/img/icon/default-profile.png" />
-        <span>서은</span>
-        <span>님의 답변</span>
+      <div class="content" @click="clickInquiry(inquiry.inquiry.inquiry_id)">
+        <p>{{ inquiry.inquiry.title }}</p>
       </div>
-      <p>안녕하세요! 노션 사용 방법 문의드려요</p>
+      <div class="content-info">
+        <span>{{ parseDate(inquiry.inquiry.createdAt) }}</span>
+        <span>{{ inquiry.inquiry.status === 'Yes' ? 'O' : 'X' }}</span>
+      </div>
     </div>
-    <i class="fa-solid fa-chevron-right"></i>
+    <div v-if="click.id === inquiry.inquiry.inquiry_id && click.click">
+      <div
+        :class="
+          userType === 'creator' && inquiry.inquiry.status === 'No'
+            ? 'question-container'
+            : 'answer-container'
+        "
+      >
+        <div class="question">
+          <span>Q. {{ inquiry.inquiry.title }}</span>
+          <p>{{ inquiry.inquiry.content }}</p>
+          <div v-if="inquiry.inquiry.fileUrl !== null" class="question-img">
+            <img :src="inquiry.inquiry.fileUrl" />
+          </div>
+        </div>
+        <div v-if="inquiry.inquiry.status === 'Yes'" class="answer-content">
+          <span>A. {{ inquiry.answer.title }}</span>
+          <p>{{ inquiry.answer.content }}</p>
+        </div>
+        <div
+          v-if="userType === 'creator' && inquiry.inquiry.status === 'No'"
+          class="creator-answer"
+        >
+          <input
+            class="answer-title"
+            placeholder="제목을 입력해주세요."
+            v-model="answerText.title"
+          />
+          <textarea
+            class="answer-textarea"
+            placeholder="상세내용을 입력해주세요."
+            v-model="answerText.content"
+          />
+          <FileUploader page="answer" @upload-file="uploadFile" />
+          <div class="answer-btn">
+            <button
+              @click="
+                uploadAnswer(
+                  inquiry.inquiry.inquiry_id,
+                  inquiry.inquiry.template_id,
+                )
+              "
+            >
+              작성 완료
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue';
+import FileUploader from './FileUploader.vue';
 import axios from '../../axios';
+
 export default {
-  setup() {
+  components: {
+    FileUploader,
+  },
+  props: {
+    userType: {
+      type: String,
+    },
+  },
+  setup({ userType }) {
     const config = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -29,78 +101,25 @@ export default {
       },
     };
     const inquiryList = ref([]);
+    const click = ref({});
+    const answerText = ref({
+      title: '',
+      content: '',
+    });
+    const formData = new FormData();
 
     const getMyInquiry = async () => {
+      let res;
       try {
-        // const res = await axios.get('user/inquiry-answer', config);
-        // console.log(res);
-        inquiryList.value = [
-          {
-            inquiry: {
-              inquiry_id: 7,
-              title: '문의 제목입니다.',
-              content: '문의 본문입니다.',
-              fileUrl:
-                'https://notionable-s3-bucket.s3.ap-northeast-2.amazonaws.com/70d03c4d-7349-43c6-95e0-5c78e3a4e69e.jpg',
-              createdAt: '2024-01-14T19:23:07.600819',
-              status: 'No',
-              user: {
-                createdAt: '2023-12-31T16:31:04.854484',
-                modifiedAt: '2024-01-10T17:58:27.847717',
-                userId: 1,
-                email: 'test@naver.com',
-                password:
-                  '{bcrypt}$2a$10$jtL8KUMlcwa8NDNsMCrSHuLd.xWwQl.Yb/49GsEWWzMpHP7ozMWTO',
-                userType: 0,
-                role: null,
-                nickName: '수정된 닉네임',
-                profile:
-                  'https://notionable-s3-bucket.s3.ap-northeast-2.amazonaws.com/9cfbb7f2-acea-4ca5-8a4f-0e3d0bf7743f.jpg',
-                phoneNumber: '01012345678',
-              },
-              template_id: 2,
-            },
-            answer: null,
-          },
-          {
-            inquiry: {
-              inquiry_id: 9,
-              title: '문의 제목입니다!!!!.',
-              content: '문의 본문입니다.!!!!',
-              fileUrl:
-                'https://notionable-s3-bucket.s3.ap-northeast-2.amazonaws.com/51b98acf-c28a-4767-a766-3c8ca402da1b.jpg',
-              createdAt: '2024-01-14T20:54:52.916236',
-              status: 'Yes',
-              user: {
-                createdAt: '2023-12-31T16:31:04.854484',
-                modifiedAt: '2024-01-10T17:58:27.847717',
-                userId: 1,
-                email: 'test@naver.com',
-                password:
-                  '{bcrypt}$2a$10$jtL8KUMlcwa8NDNsMCrSHuLd.xWwQl.Yb/49GsEWWzMpHP7ozMWTO',
-                userType: 0,
-                role: null,
-                nickName: '수정된 닉네임',
-                profile:
-                  'https://notionable-s3-bucket.s3.ap-northeast-2.amazonaws.com/9cfbb7f2-acea-4ca5-8a4f-0e3d0bf7743f.jpg',
-                phoneNumber: '01012345678',
-              },
-              template_id: 2,
-            },
-            answer: {
-              answer_id: 6,
-              title: '답변 제목입니다.',
-              content: '답변 본문입니다.',
-              fileUrl:
-                'https://notionable-s3-bucket.s3.ap-northeast-2.amazonaws.com/1302d475-2cf5-40d4-9e6e-3202e67c3292.jpg',
-              createdAt: '2024-01-14T22:16:24.708113',
-              status: 'Yes',
-              creator_id: 46,
-              template_id: 2,
-              inquiry_id: 9,
-            },
-          },
-        ];
+        if (userType === 'user') {
+          res = await axios.get('user/inquiry-answer', config);
+          console.log(res);
+          inquiryList.value = res.data.data;
+        } else {
+          res = await axios.get('creator/inquiry-answer', config);
+          console.log(res);
+          inquiryList.value = res.data.data;
+        }
       } catch (err) {
         console.log(err);
       }
@@ -108,50 +127,205 @@ export default {
 
     getMyInquiry();
 
+    const parseDate = approvedAt => {
+      const date = new Date(approvedAt);
+      return date.toLocaleDateString();
+    };
+
+    const clickInquiry = id => {
+      click.value = { id, click: !click.value.click };
+    };
+
+    const uploadFile = file => {
+      formData.append('file', file);
+    };
+
+    const uploadAnswer = async (inquiry_id, template_id) => {
+      const answerDto = {
+        title: answerText.value.title,
+        content: answerText.value.content,
+        template_id,
+      };
+
+      const json = JSON.stringify(answerDto);
+      const blob = new Blob([json], { type: 'application/json' });
+      formData.append('answerDto', blob);
+
+      try {
+        const res = await axios.post('creator/answer', formData, config);
+        if (res.data.code === 200) {
+          alert('답변이 등록되었습니다.');
+          clickInquiry(inquiry_id);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     return {
       inquiryList,
+      click,
+      clickInquiry,
+      parseDate,
+      answerText,
+      uploadFile,
+      uploadAnswer,
     };
   },
 };
 </script>
 
 <style>
-.inquiry-history-list {
+.inquiry-history-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.3em;
+}
+
+.inquiry-history-subtitle {
+  border-top: 1px solid #e4e5ec;
   display: flex;
+  justify-content: space-between;
+  padding: 1em 0;
+}
+
+.answer-existence span:first-child {
+  display: inline-block;
+  width: 80px;
+  text-align: center;
+}
+
+.answer-existence span:last-child {
+  display: inline-block;
+  width: 50px;
+  text-align: center;
+  margin-left: 2em;
+}
+
+.inquiry-history-list {
+  padding: 1.2em 0;
   border-bottom: 1px solid #e4e5ec;
+}
+
+.border {
+  border: none;
+}
+
+.inquiry-history {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.2em 1.5em 1.2em 0;
 }
 
-.inquiry-history-title {
-  display: flex;
-  align-items: center;
-}
-
-.inquiry-history-title img {
-  width: 28px;
-}
-
-.inquiry-history-title span:nth-child(2) {
-  font-weight: 800;
-  font-size: 1.1rem;
-  margin: 0 0.4em;
-}
-
-.inquiry-history-title span:last-child {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.inquiry-history p {
+.content p {
   font-size: 1rem;
   font-weight: 500;
-  margin: 0.8em 0 0 0;
+  margin: 0;
+  cursor: pointer;
 }
 
-.inquiry-history-list i {
-  font-size: 1.2rem;
+.content-info span:first-child {
+  display: inline-block;
+  width: 80px;
+  text-align: center;
+}
+
+.content-info span:last-child {
+  font-size: 1rem;
+  display: inline-block;
+  width: 50px;
+  text-align: center;
+  margin-left: 1.8em;
+}
+
+.answer-container {
+  background-color: #fafafc;
+  margin-top: 0.6em;
+  padding: 2em;
+}
+
+.question-container {
+  padding: 2em;
+}
+
+.question {
+  margin-bottom: 2em;
+}
+
+.question span {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #3168cd;
+}
+
+.question-img {
+  width: calc(100% / 3);
+  height: 140px;
+  overflow: hidden;
+  border-radius: 20px;
+  margin-left: 1.5em;
+}
+
+.question-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.answer-content span {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.question p,
+.answer-content p {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0.5em 0 0.5em 1.5em;
+}
+
+.creator-answer {
+  width: 95%;
+  padding-left: 1.5em;
+}
+
+.answer-textarea,
+.answer-title {
+  width: 100%;
+  border: 1px solid #e4e5ec;
+  border-radius: 6px;
+  padding: 0.5em 1em;
+}
+
+.answer-textarea {
+  min-height: 130px;
+  resize: none;
+  padding: 1em;
+  margin-top: 0.5em;
+}
+
+.answer-textarea::placeholder,
+.answer-title::placeholder {
+  color: #cacbd3;
+}
+
+.answer-textarea:focus,
+.answer-title:focus {
+  outline: none;
+}
+
+.answer-btn {
+  text-align: right;
+}
+
+.answer-btn button {
+  background-color: #313440;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 30px;
   cursor: pointer;
 }
 </style>

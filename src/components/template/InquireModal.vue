@@ -57,7 +57,7 @@ export default {
       type: Function,
     },
   },
-  setup({ templateDesc }) {
+  setup({ templateDesc, clickInquire }) {
     const { uploadImg, imgFiles, saveImgFile, deleteImg } = useImgSave();
     const titleText = ref('');
     const inquiryText = ref('');
@@ -94,6 +94,10 @@ export default {
         try {
           const res = await axios.post('user/inquiry', formData, config);
           console.log(res);
+          if (res.data.code === 200) {
+            alert('문의가 등록되었습니다.');
+            clickInquire();
+          }
         } catch (err) {
           console.log(err);
         }
