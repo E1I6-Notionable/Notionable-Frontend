@@ -12,7 +12,7 @@
       <img class="purchase-template-img" :src="purchase.thumbnail" />
       <div class="purchase-template-content">
         <div class="purchase-template-title">
-          <span>구매완료</span>
+          <span v-if="userRole !== 'ROLE_CREATOR'">구매완료</span>
           <span>{{ purchase.title }}</span>
           <span>{{ purchase.creatorName }}</span>
         </div>
@@ -33,7 +33,7 @@
 <script>
 import ReviewWriteBtn from 'src/components/template/ReviewWriteBtn.vue';
 import axios from '../../axios';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 export default {
@@ -49,6 +49,7 @@ export default {
     const purchaseList = ref([]);
     const router = useRouter();
     const store = useStore();
+    const userRole = computed(() => store.state.user.role);
 
     const getPurchaseHistory = async () => {
       const config = {
@@ -94,6 +95,7 @@ export default {
       parseDate,
       toTemplatePage,
       toWriteReview,
+      userRole,
     };
   },
 };
