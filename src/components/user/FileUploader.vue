@@ -1,13 +1,17 @@
 <template>
   <div class="file-upload">
     <span class="title">{{ title }}</span>
-    <label :htmlFor="title">
-      <div>
-        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+    <label :htmlFor="title ? title : page">
+      <div
+        class="file-upload-container"
+        :class="{ 'answer-file': page === 'answer' }"
+      >
+        <i v-if="page === 'answer'" class="fa-solid fa-paperclip"></i>
+        <i v-else class="fa-solid fa-arrow-up-from-bracket"></i>
         <input
           class="file-uploader"
           type="file"
-          :id="title"
+          :id="title ? title : page"
           accept=".pdf"
           @change="saveFile"
         />
@@ -22,6 +26,9 @@ import { ref } from 'vue';
 export default {
   props: {
     title: {
+      type: String,
+    },
+    page: {
       type: String,
     },
   },
@@ -52,7 +59,7 @@ export default {
   font-size: 0.9rem;
 }
 
-.file-upload div {
+.file-upload-container {
   background-color: white;
   padding: 0.8em;
   margin: 0.5em 0 2.5em 0;
@@ -63,7 +70,11 @@ export default {
   cursor: pointer;
 }
 
-.file-upload div i {
+.answer-file {
+  margin: 0;
+}
+
+.file-upload-container i {
   margin-right: 0.5em;
 }
 

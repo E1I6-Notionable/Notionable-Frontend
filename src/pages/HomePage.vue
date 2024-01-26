@@ -171,16 +171,16 @@ export default {
 
     getHomePage();
 
-    // onMounted(() => {
-    //   timer = setInterval(() => {
-    //     num.value = num.value + 1;
-    //     carouselTransition.value = 'transform 500ms ease-in-out';
-    //   }, 3000);
-    //   payTimer = setInterval(() => {
-    //     payNum.value = payNum.value + 1;
-    //     payCarouselTransition.value = 'transform 500ms ease-in-out';
-    //   }, 3000);
-    // });
+    onMounted(() => {
+      timer = setInterval(() => {
+        num.value = num.value + 1;
+        carouselTransition.value = 'transform 500ms ease-in-out';
+      }, 3000);
+      payTimer = setInterval(() => {
+        payNum.value = payNum.value + 1;
+        payCarouselTransition.value = 'transform 500ms ease-in-out';
+      }, 3000);
+    });
 
     onUnmounted(() => {
       clearInterval(timer);

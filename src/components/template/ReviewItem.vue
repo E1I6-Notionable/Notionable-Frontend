@@ -43,7 +43,10 @@
         @click="clickUpdateBtn"
       >
         <img src="/img/icon/myreview-pencil.png" v-if="!updateView" />
-        <button v-else>완료</button>
+        <div v-else>
+          <button class="delete-btn" @click="deleteReview">삭제</button>
+          <button class="complete-btn">완료</button>
+        </div>
       </span>
     </div>
   </div>
@@ -101,6 +104,22 @@ export default {
       }
     };
 
+    const deleteReview = async () => {
+      try {
+        const res = await axios.delete(
+          `template/review/${review.reviewId}`,
+          config,
+        );
+        console.log(res);
+        if (res.data.code === 200) {
+          alert('삭제가 완료되었습니다.');
+          window.location.reload();
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     return {
       updateView,
       clickUpdateBtn,
@@ -109,6 +128,7 @@ export default {
       commentContent,
       updateReview,
       parseCreatedAt,
+      deleteReview,
     };
   },
 };
@@ -172,20 +192,20 @@ export default {
 .review-imgs {
   display: flex;
   margin-top: 1em;
-  overflow: hidden;
 }
 
-.review-imgs div {
+.review-imgs > div {
   width: calc(100% / 3 - 1em);
   height: 140px;
   border-radius: 20px;
   margin-right: 1.5em;
   overflow: hidden;
   flex-shrink: 0;
-  display: flex;
 }
 
 .review-imgs img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -208,6 +228,7 @@ export default {
   width: 100%;
   box-sizing: border-box;
   margin-right: 1em;
+  resize: none;
 }
 
 textarea:focus {
@@ -222,9 +243,12 @@ textarea:focus {
   width: 25px;
 }
 
-.review-update-btn button {
-  background-color: #313440;
-  color: white;
+.review-update-btn div {
+  display: flex;
+}
+
+.complete-btn,
+.delete-btn {
   border: none;
   padding: 0.5em 1em;
   border-radius: 8px;
@@ -232,5 +256,16 @@ textarea:focus {
   cursor: pointer;
   width: fit-content;
   white-space: nowrap;
+}
+
+.complete-btn {
+  background-color: #313440;
+  color: white;
+}
+
+.delete-btn {
+  background-color: #ebebf0;
+  color: #313440;
+  margin-right: 0.6em;
 }
 </style>

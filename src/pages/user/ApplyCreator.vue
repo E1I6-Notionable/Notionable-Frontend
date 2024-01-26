@@ -38,6 +38,13 @@
       </div>
     </div>
   </div>
+  <Alert
+    v-if="alertView"
+    text="크리에이터 신청이 완료되었습니다."
+    :buttonText="{ yes: '확인', close: '닫기' }"
+    :buttonFunc="toMypage"
+    :closeFunc="closeAlert"
+  />
   <CustomFooter />
 </template>
 
@@ -46,8 +53,10 @@ import CustomHeader from 'src/components/CustomHeader.vue';
 import CustomFooter from 'src/components/CustomFooter.vue';
 import Dropdown from 'src/components/user/Dropdown.vue';
 import FileUploader from 'src/components/user/FileUploader.vue';
+import Alert from 'src/components/Alert.vue';
 import { reactive, ref } from 'vue';
 import axios from '../../axios';
+import { useRouter } from 'vue-router';
 
 export default {
   components: {
@@ -55,8 +64,10 @@ export default {
     CustomFooter,
     Dropdown,
     FileUploader,
+    Alert,
   },
   setup() {
+    const router = useRouter();
     const toCreator = ref(false);
     const clickCreator = () => {
       toCreator.value = true;
@@ -83,6 +94,7 @@ export default {
         'Access-Control-Allow-Credentials': true,
       },
     };
+    const alertView = ref(false);
 
     const storeCategory = category => {
       creatorInfo.creatorType = category;
@@ -99,6 +111,14 @@ export default {
       formData.append('identification', file);
     };
 
+    const toMypage = () => {
+      router.replace('/mypage');
+    };
+
+    const closeAlert = () => {
+      alertView.value = false;
+    };
+
     const registerCreator = async () => {
       const creatorDto = {
         creatorType: creatorInfo.creatorType,
@@ -110,13 +130,11 @@ export default {
       const blob = new Blob([json], { type: 'application/json' });
       formData.append('creatorDto', blob);
 
-      for (let key of formData.keys()) {
-        console.log(key, ':', formData.get(key));
-      }
-
       try {
         const res = await axios.post('user/creator/register', formData, config);
-        console.log(res);
+        if (res.data.code === 200) {
+          alertView.value = true;
+        }
       } catch (err) {
         console.log(err);
       }
@@ -132,6 +150,9 @@ export default {
       uploadBankPaper,
       uploadIdentification,
       registerCreator,
+      alertView,
+      toMypage,
+      closeAlert,
     };
   },
 };

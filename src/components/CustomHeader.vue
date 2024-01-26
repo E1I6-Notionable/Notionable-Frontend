@@ -325,12 +325,12 @@ header {
   margin-right: 4em;
   padding: 0.5em 0;
   font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
 }
 
 .nav-clicked {
   border-bottom: 2.8px solid black;
+  font-weight: 600;
 }
 
 a {
