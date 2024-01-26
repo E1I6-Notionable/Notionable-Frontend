@@ -1,22 +1,7 @@
 <template>
-  <div
-    class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center"
-  >
-    <div>
-      <div style="font-size: 30vh">404</div>
-
-      <div class="text-h2" style="opacity: 0.4">Oops. Nothing here...</div>
-
-      <q-btn
-        class="q-mt-xl"
-        color="white"
-        text-color="blue"
-        unelevated
-        to="/"
-        label="Go Home"
-        no-caps
-      />
-    </div>
+  <div class="not-found">
+    <img src="/img/logo_horizontal.png" />
+    <q-spinner-dots color="primary" size="4em" />
   </div>
 </template>
 
@@ -27,3 +12,17 @@ export default defineComponent({
   name: 'ErrorNotFound',
 });
 </script>
+
+<style>
+.not-found {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15%;
+}
+
+.not-found img {
+  margin-bottom: 2em;
+}
+</style>
