@@ -103,22 +103,18 @@ const routes = [
         component: () => import('src/pages/creator/RevenueManagement.vue'),
       },
       {
-        path: '/login/oauth2',
-        component: () => import('pages/ExceptionPage.vue'),
-      },
-      {
-        path: '/404/:id',
-        component: () => import('pages/ExceptionPage.vue'),
-      },
-      {
         path: '/success/:id',
+        component: () => import('pages/ExceptionPage.vue'),
+      },
+      {
+        path: '/login/oauth2',
         component: () => import('pages/ExceptionPage.vue'),
       },
     ],
   },
   {
     path: '/:catchAll(.*)*',
-    redirect: '/404',
+    component: () => import('pages/ErrorNotFound.vue'),
   },
 ];
 
