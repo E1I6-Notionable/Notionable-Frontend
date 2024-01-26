@@ -92,28 +92,24 @@ export default {
     };
 
     const deleteCartItem = async () => {
-      let index = 0;
-      let filtered;
+      // let index = 0;
+      // let filtered;
 
-      console.log(checkList.value);
+      // checkList.value.map(item => {
+      //   filtered = cartsList.value.filter(cart => cart.item_id !== item);
+      // });
 
-      checkList.value.map(item => {
-        filtered = cartsList.value.filter(cart => cart.item_id !== item);
-      });
-
-      cartsList.value = filtered;
-
-      for (let i = 0; i < cartsList.value.length; i++) {
-        if (i % 3 === 0) {
-          let arr = cartsList.value.slice(i, i + 3);
-          calCartsList.value[index++] = arr;
-        }
-      }
+      // for (let i = 0; i < cartsList.value.length; i++) {
+      //   if (i % 3 === 0) {
+      //     let arr = cartsList.value.slice(i, i + 3);
+      //     calCartsList.value[index++] = arr;
+      //   }
+      // }
 
       try {
         const res = await axios.delete('user/my-cart/delete', config);
         console.log(res);
-        if (res.data.code === 200) router.replace();
+        if (res.data.code === 200) window.location.reload();
         // checkboxView.value = false;
       } catch (err) {
         console.log(err);
