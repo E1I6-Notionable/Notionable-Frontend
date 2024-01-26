@@ -103,7 +103,11 @@ const routes = [
         component: () => import('src/pages/creator/RevenueManagement.vue'),
       },
       {
-        path: '/404',
+        path: '/404/:id',
+        component: () => import('pages/ExceptionPage.vue'),
+      },
+      {
+        path: '/success/:id',
         component: () => import('pages/ExceptionPage.vue'),
       },
     ],
