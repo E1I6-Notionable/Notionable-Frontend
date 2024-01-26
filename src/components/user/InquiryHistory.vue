@@ -157,6 +157,7 @@ export default {
         if (res.data.code === 200) {
           alert('답변이 등록되었습니다.');
           clickInquiry(inquiry_id);
+          window.location.reload();
         }
       } catch (err) {
         console.log(err);
