@@ -29,12 +29,12 @@
     </div>
     <div class="review-imgs" v-if="review.imageUrls.length !== 0">
       <div v-for="(image, i) in review.imageUrls" :key="image">
-        <img :src="image" />
         <i
           v-if="updateView"
-          class="fa-solid fa-circle-xmark"
+          class="fa-solid fa-circle-xmark delete-icon"
           @click="deleteImg(i)"
         ></i>
+        <img :src="image" />
       </div>
     </div>
     <div class="reveiw-content">
@@ -272,5 +272,8 @@ textarea:focus {
   background-color: #ebebf0;
   color: #313440;
   margin-right: 0.6em;
+}
+
+.delete-icon {
 }
 </style>
