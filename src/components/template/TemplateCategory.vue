@@ -60,6 +60,7 @@ export default {
 .category {
   position: relative;
   margin: 0 1em;
+  z-index: 5;
 }
 
 .category-btn,
