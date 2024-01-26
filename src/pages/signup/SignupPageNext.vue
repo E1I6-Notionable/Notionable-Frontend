@@ -127,9 +127,6 @@
         <span>누르면 가입완료!</span>
       </div>
     </div>
-    <div v-if="signupNext">
-      <SignUpSuccess :name="name" />
-    </div>
   </div>
 </template>
 
@@ -137,13 +134,9 @@
 import { computed, ref } from 'vue';
 import axios from 'src/axios';
 import { useRouter } from 'vue-router';
-import SignUpSuccess from '../../components/signup/SignUpSuccess.vue';
 
 export default {
   name: 'SignupPageNext',
-  components: {
-    SignUpSuccess,
-  },
   setup() {
     const router = useRouter();
     const input = ref({
@@ -240,7 +233,9 @@ export default {
           phoneNumber: input.value.phoneNumber,
         });
         console.log(res);
-        signupNext.value = true;
+        if (res.data.code === 200) {
+          router.replace(`/signup/success/${name.value}`);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -267,7 +262,6 @@ export default {
       signup,
       toHome,
       loading,
-      signupNext,
     };
   },
 };
