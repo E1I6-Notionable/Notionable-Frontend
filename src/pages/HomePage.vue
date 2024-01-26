@@ -24,11 +24,11 @@
           <div class="control">
             <div class="control-btn">‹</div>
             <span>{{
-              num < 10
-                ? `0${(num + 1) % 3 === 0 ? banner.length : (num + 1) % 3}`
-                : (num + 1) % 3 === 0
-                ? banner.length
-                : (num + 1) % 3
+              payNum + 1 === payBanner.length + 1
+                ? '01'
+                : payNum < 10
+                ? `0${payNum + 1}`
+                : payNum
             }}</span>
             <span>/{{ bannerCount }}</span>
             <div class="control-btn">›</div>
@@ -53,13 +53,11 @@
           <div class="control">
             <div class="control-btn">‹</div>
             <span>{{
-              payNum < 10
-                ? `0${
-                    (payNum + 1) % 3 === 0 ? payBanner.length : (payNum + 1) % 3
-                  }`
-                : (payNum + 1) % 3 === 0
-                ? payBanner.length
-                : (payNum + 1) % 3
+              payNum + 1 === payBanner.length + 1
+                ? '01'
+                : payNum < 10
+                ? `0${payNum + 1}`
+                : payNum
             }}</span>
             <span>/{{ payBannerCount }}</span>
             <div class="control-btn">›</div>

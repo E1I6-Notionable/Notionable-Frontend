@@ -145,6 +145,7 @@ export default {
         title: answerText.value.title,
         content: answerText.value.content,
         template_id,
+        inquiry_id,
       };
 
       const json = JSON.stringify(answerDto);
