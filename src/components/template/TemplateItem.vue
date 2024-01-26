@@ -108,6 +108,7 @@ export default {
   border-radius: 5px;
   font-weight: 600;
   margin-right: 0.5em;
+  display: none;
 }
 
 .template-author {
