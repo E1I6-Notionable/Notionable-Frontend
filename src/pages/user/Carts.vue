@@ -127,6 +127,7 @@ export default {
 .carts-container {
   width: 1200px;
   margin: 3em auto;
+  min-height: 60vh;
 }
 
 .carts-container h1 {
