@@ -1,6 +1,7 @@
 <template>
   <div class="template-review-top">
     <ReviewWriteBtn
+      v-if="paid"
       page="review"
       :writeView="writeView"
       @click="clickWriteBtn"
@@ -35,6 +36,11 @@ export default {
     ReviewWriteBtn,
     ReviewItem,
     WriteReview,
+  },
+  props: {
+    paid: {
+      type: Boolean,
+    },
   },
   setup() {
     const store = useStore();

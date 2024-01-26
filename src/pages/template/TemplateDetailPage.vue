@@ -16,7 +16,10 @@
             </div>
           </div>
           <TemplateNotice v-if="currentCategory === '상품상세'" />
-          <TemplateReview v-else-if="currentCategory === '구매후기'" />
+          <TemplateReview
+            :paid="templateDesc.paid"
+            v-else-if="currentCategory === '구매후기'"
+          />
         </div>
       </div>
       <div>

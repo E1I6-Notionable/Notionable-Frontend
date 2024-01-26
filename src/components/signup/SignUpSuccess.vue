@@ -37,20 +37,19 @@
 </template>
 
 <script>
+import { useRoute, useRouter } from 'vue-router';
 export default {
-  props: {
-    name: {
-      type: String,
-    },
-  },
   setup() {
+    const route = useRoute();
+    const router = useRouter();
+    const name = route.params.name;
     const goToMainPage = () => {
-      const mainPagePath = '/main'; // 메인페이지 예시: /main
+      const mainPagePath = '/'; // 메인페이지 예시: /main
 
-      $router.push(mainPagePath);
+      router.replace(mainPagePath);
     };
 
-    return { goToMainPage };
+    return { goToMainPage, name };
   },
 };
 </script>
