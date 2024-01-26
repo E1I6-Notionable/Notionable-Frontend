@@ -274,10 +274,12 @@ export default {
 .template-info,
 .template-detail {
   width: 600px;
+  display: flex;
+  flex-direction: column;
 }
 
 .input-wrap {
-  margin: 3em 0;
+  margin: 1em 0;
 }
 
 .next-btn {
