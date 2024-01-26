@@ -184,11 +184,11 @@
           :dense="dense"
         >
           <template v-slot:prepend>
-            <img v-if="userProfile" :src="userProfile" style="width: 25px" />
+            <img v-if="userProfile" :src="userProfile" style="width: 30px; height: 30px;border-radius: 20px;" />
             <img
               v-else
               src="../../../public/img/icon/default-profile.png"
-              style="width: 25px"
+              style="width: 25px; "
             />
             <p class="comment-writer">{{ userName }}</p>
           </template>
@@ -217,7 +217,6 @@ import CustomFooter from '../../components/CustomFooter.vue';
 import CommentList from '../../components/community/comment/CommentList.vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { useQuasar } from 'quasar';
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
@@ -451,39 +450,42 @@ export default {
       }
     },
     submitComment() {
-      const $q = useQuasar();
       if (!this.commentText) {
-        $q.notify('댓글을 작성해주세요!');
-      }
-      const token = localStorage.getItem('accessToken');
-      console.log(token);
-      const postId = this.$route.params.id;
-      console.log(postId);
-      console.log(this.commentText);
-      axios
-        .post(
-          `http://13.209.29.227:8080/comments/${postId}`,
-          {
-            content: this.commentText,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
+        alert('댓글을 작성해주세요!');
+      } else {
+        const token = localStorage.getItem('accessToken');
+        console.log(token);
+        const postId = this.$route.params.id;
+        console.log(postId);
+        console.log(this.commentText);
+        axios
+          .post(
+            `http://13.209.29.227:8080/comments/${postId}`,
+            {
+              content: this.commentText,
             },
-          },
-        )
-        .then(response => {
-          if (response.data.success) {
-            this.commentText = '';
-            this.fetchData();
-          } else {
-            console.error('Comment submission failed:', response.data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error submitting comment:', error);
-        });
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            },
+          )
+          .then(response => {
+            if (response.data.success) {
+              this.commentText = '';
+              this.fetchData();
+            } else {
+              console.error(
+                'Comment submission failed:',
+                response.data.message,
+              );
+            }
+          })
+          .catch(error => {
+            console.error('Error submitting comment:', error);
+          });
+      }
     },
   },
 
