@@ -118,6 +118,6 @@ export default {
 
 <style>
 body {
-  font-family: 'SUIT-Regular', 'sans-serif';
+  font-family: 'SUIT-Medium', 'sans-serif';
 }
 </style>

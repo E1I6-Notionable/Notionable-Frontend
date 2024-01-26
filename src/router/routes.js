@@ -90,11 +90,23 @@ const routes = [
         path: 'mypage/my-scrap',
         component: () => import('src/pages/user/MyScrap.vue'),
       },
+      {
+        path: 'mypage/upload-template',
+        component: () => import('src/pages/creator/UploadTemplate.vue'),
+      },
+      {
+        path: 'mypage/revenue-management',
+        component: () => import('src/pages/creator/RevenueManagement.vue'),
+      },
+      {
+        path: '/404',
+        component: () => import('pages/ExceptionPage.vue'),
+      },
     ],
   },
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    redirect: '/404',
   },
 ];
 

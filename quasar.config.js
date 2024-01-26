@@ -65,11 +65,11 @@ module.exports = configure(function (/* ctx */) {
       env: {
         API_URL: 'http://13.209.29.227:8080/',
         KAKAO_SOCIAL_URL:
-          'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=91d67d42f8526298cda1b5730f19343c&redirect_uri=http://localhost:9000/login/oauth2/code/kakao',
+          'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=91d67d42f8526298cda1b5730f19343c&redirect_uri=http://13.209.29.227:9000//login/oauth2/code/kakao',
         GOOGLE_SOCIAL_URL:
-          'https://accounts.google.com/o/oauth2/v2/auth?client_id=737316728017-ceqvfasun5g4i6nbh29b6jqe6fs80hpj.apps.googleusercontent.com&redirect_uri=http://localhost:9000/login/oauth2/code/google&response_type=code&scope=email profile',
+          'https://accounts.google.com/o/oauth2/v2/auth?client_id=737316728017-ceqvfasun5g4i6nbh29b6jqe6fs80hpj.apps.googleusercontent.com&redirect_uri=http://localhost:9000//login/oauth2/code/google&response_type=code&scope=email profile',
         NAVER_SOCIAL_URL:
-          'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=v5Lz3vYNpeTwqR1wfz7q&state= STATE_STRING&redirect_uri=http://localhost:9000/login/oauth2/code/naver',
+          'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=v5Lz3vYNpeTwqR1wfz7q&state= STATE_STRING&redirect_uri=http://13.209.29.227:9000//login/oauth2/code/naver',
         CLIENT_KEY: 'test_ck_vZnjEJeQVxeq2NQNqJZqrPmOoBN0',
       },
       // rawDefine: {}
