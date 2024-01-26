@@ -60,7 +60,7 @@ export default {
     };
 
     const submitEmail = async () => {
-      const templateId = arrayUrl[30];
+      const templateId = route.params.id;
 
       try {
         const res = await axios.get(`template/url-mail/${templateId}`, config);
@@ -74,8 +74,6 @@ export default {
     };
 
     const confirmPayments = () => {
-      const templateId = arrayUrl[30];
-
       router
         .isReady()
         .then(async () => {
@@ -86,7 +84,7 @@ export default {
                 orderId: route.query.orderId,
                 amount: route.query.amount,
                 paymentKey: route.query.paymentKey,
-                templateId: templateId,
+                templateId: route.params.id,
               },
               config,
             );

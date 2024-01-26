@@ -5,7 +5,7 @@
         <img src="/img/icon/default-profile.png" />
       </div>
       <div class="creator-name">
-        <span class="name">횬닝</span>
+        <span class="name">{{ templateDesc.nickName }}</span>
         <span class="response-time">평균 응답시간: 1시간 이내</span>
       </div>
     </div>

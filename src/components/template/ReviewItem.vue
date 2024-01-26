@@ -27,14 +27,16 @@
     <div class="review-date">
       {{ parseCreatedAt }}
     </div>
-    <div class="review-imgs" v-if="review.imageUrls.length !== 0">
-      <div v-for="(image, i) in review.imageUrls" :key="image">
+    <div class="review-img-list" v-if="review.imageUrls.length !== 0">
+      <div v-for="(image, i) in reviewImgList" :key="image">
+        <div class="review-img">
+          <img :src="image" />
+        </div>
         <i
           v-if="updateView"
           class="fa-solid fa-circle-xmark delete-icon"
           @click="deleteImg(i)"
         ></i>
-        <img :src="image" />
       </div>
     </div>
     <div class="reveiw-content">
@@ -75,6 +77,7 @@ export default {
     const commentContent = ref(review.content);
     const createdAt = new Date(review.createdAt);
     const parseCreatedAt = createdAt.toLocaleDateString();
+    const reviewImgList = ref(review.imageUrls);
 
     const config = {
       headers: {
@@ -94,16 +97,16 @@ export default {
 
     const updateReview = async () => {
       try {
-        // const res = await axios.put(
-        //   `template/review/${review.reviewId}`,
-        //   {
-        //     templateId,
-        //     rate: satisfaction.value,
-        //     content: commentContent.value,
-        //   },
-        //   config,
-        // );
-        // console.log(res);
+        const res = await axios.put(
+          `template/review/${review.reviewId}`,
+          {
+            templateId,
+            rate: satisfaction.value,
+            content: commentContent.value,
+          },
+          config,
+        );
+        console.log(res);
       } catch (err) {
         console.log(err);
       }
@@ -125,6 +128,13 @@ export default {
       }
     };
 
+    const deleteImg = i => {
+      const filteredList = reviewImgList.value.filter(
+        (_, index) => index !== i,
+      );
+      reviewImgList.value = filteredList;
+    };
+
     return {
       updateView,
       clickUpdateBtn,
@@ -134,6 +144,8 @@ export default {
       updateReview,
       parseCreatedAt,
       deleteReview,
+      reviewImgList,
+      deleteImg,
     };
   },
 };
@@ -194,21 +206,26 @@ export default {
   text-align: right;
 }
 
-.review-imgs {
+.review-img-list {
   display: flex;
   margin-top: 1em;
 }
 
-.review-imgs > div {
+.review-img-list > div {
   width: calc(100% / 3 - 1em);
-  height: 140px;
-  border-radius: 20px;
   margin-right: 1.5em;
-  overflow: hidden;
   flex-shrink: 0;
+  position: relative;
 }
 
-.review-imgs img {
+.review-img {
+  width: 100%;
+  height: 140px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.review-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -275,5 +292,10 @@ textarea:focus {
 }
 
 .delete-icon {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 1.6rem;
+  cursor: pointer;
 }
 </style>
