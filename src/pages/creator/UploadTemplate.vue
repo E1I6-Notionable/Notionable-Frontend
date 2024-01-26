@@ -167,7 +167,7 @@ export default {
         title: templateInfo.value.title,
         content: templateInfo.value.content,
         category: currentCategory.value.en,
-        price: templateInfo.value.price,
+        price: Number(templateInfo.value.price),
         notionUrl: templateInfo.value.url,
       };
       const json = JSON.stringify(reqDto);

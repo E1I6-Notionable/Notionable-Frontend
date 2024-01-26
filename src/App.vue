@@ -12,7 +12,6 @@ export default {
     const store = useStore();
     const url = window.location.href;
     const route = useRoute();
-    const arrayUrl = [...url];
 
     const config = {
       headers: {

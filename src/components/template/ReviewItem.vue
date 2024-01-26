@@ -78,6 +78,7 @@ export default {
     const createdAt = new Date(review.createdAt);
     const parseCreatedAt = createdAt.toLocaleDateString();
     const reviewImgList = ref(review.imageUrls);
+    const formData = new FormData();
 
     const config = {
       headers: {
@@ -96,14 +97,20 @@ export default {
     };
 
     const updateReview = async () => {
+      const reqDto = {
+        templateId,
+        rate: satisfaction.value,
+        content: commentContent.value,
+        imageUrls: reviewImgList.value,
+      };
+      const json = JSON.stringify(reqDto);
+      const blob = new Blob([json], { type: 'application/json' });
+      formData.append('reqDto', blob);
+
       try {
         const res = await axios.put(
           `template/review/${review.reviewId}`,
-          {
-            templateId,
-            rate: satisfaction.value,
-            content: commentContent.value,
-          },
+          formData,
           config,
         );
         console.log(res);
