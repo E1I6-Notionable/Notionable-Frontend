@@ -38,6 +38,14 @@
             page="upload-template"
           />
         </div>
+        <div class="input-wrap">
+          <CustomInput
+            name="Notion Url"
+            placeholder="Url을 입력해주세요."
+            v-model:value="templateInfo.url"
+            page="upload-template"
+          />
+        </div>
         <div class="next-btn">
           <button class="upload-template-btn" @click="toTemplateDetail">
             다음
@@ -97,6 +105,7 @@ import { useImgSave } from 'src/composables/imgController';
 import TemplateCategory from 'src/components/template/TemplateCategory.vue';
 import { ref } from 'vue';
 import axios from '../../axios';
+import { useRouter } from 'vue-router';
 
 export default {
   components: {
@@ -113,6 +122,7 @@ export default {
       title: '',
       price: '',
       content: '',
+      url: '',
     });
     const { uploadImg, imgFiles, saveImgFile, deleteImg } = useImgSave();
     const formData = new FormData();
@@ -136,6 +146,7 @@ export default {
       { ko: '여행계획', en: 'travel' },
     ];
     const currentCategory = ref('');
+    const router = useRouter();
 
     const toUploadTemplate = () => {
       next.value = true;
@@ -152,19 +163,30 @@ export default {
     };
 
     const uploadTemplate = async () => {
+      const reqDto = {
+        title: templateInfo.value.title,
+        content: templateInfo.value.content,
+        category: currentCategory.value.en,
+        price: templateInfo.value.price,
+        notionUrl: templateInfo.value.url,
+      };
+      const json = JSON.stringify(reqDto);
+      const blob = new Blob([json], { type: 'application/json' });
+      formData.append('reqDto', blob);
+
+      if (imgFiles.value.length !== 0) {
+        for (let i = 0; i < imgFiles.value.length; i++) {
+          formData.append('files', imgFiles.value[i]);
+        }
+      }
+
       try {
-        const res = await axios.post(
-          'template',
-          {
-            title: templateInfo.value.title,
-            content: templateInfo.value.content,
-            category: currentCategory.value,
-            price: templateInfo.value.price,
-            notionUrl: '',
-          },
-          config,
-        );
+        const res = await axios.post('template', formData, config);
         console.log(res);
+        if (res.data.code === 200) {
+          alert('템플릿 등록이 완료되었습니다.');
+          router.replace('/mypage');
+        }
       } catch (err) {
         console.log(err);
       }
