@@ -103,6 +103,10 @@ const routes = [
         component: () => import('src/pages/creator/RevenueManagement.vue'),
       },
       {
+        path: '/login/oauth2',
+        component: () => import('pages/ExceptionPage.vue'),
+      },
+      {
         path: '/404/:id',
         component: () => import('pages/ExceptionPage.vue'),
       },
