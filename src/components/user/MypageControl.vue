@@ -4,7 +4,7 @@
       <div class="profile-img">
         <img
           :src="
-            userInfo.profile === null
+            userInfo.profile === ''
               ? '/img/icon/default-profile.png'
               : userInfo.profile
           "

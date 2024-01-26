@@ -26,7 +26,15 @@
         <img @click="toCarts" class="basket-icon" src="/img/icon/basket.png" />
         <span @click="toCarts" class="basket">장바구니</span>
         <div class="user-btn" @click="toMypage">
-          <img src="/img/icon/default-profile.png" />
+          <div class="profile-img">
+            <img
+              :src="
+                user.profile === ''
+                  ? '/img/icon/default-profile.png'
+                  : user.profile
+              "
+            />
+          </div>
           <span>{{ user.name }}</span>
           <span>님</span>
         </div>
@@ -264,9 +272,18 @@ header {
   white-space: nowrap;
 }
 
-.user-btn img {
+.profile-img {
   width: 25px;
+  height: 25px;
+  border-radius: 100%;
   margin-right: 0.5em;
+  overflow: hidden;
+}
+
+.user-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .user-btn span:nth-child(2) {
