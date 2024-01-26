@@ -33,6 +33,7 @@ import CustomFooter from 'src/components/CustomFooter.vue';
 import TemplateItem from 'src/components/template/TemplateItem.vue';
 import { ref } from 'vue';
 import axios from '../../axios';
+import { useRouter } from 'vue-router';
 export default {
   components: {
     CustomHeader,
@@ -54,6 +55,7 @@ export default {
         item_id: checkList.value,
       },
     };
+    const router = useRouter();
 
     const getCarts = async () => {
       let index = 0;
@@ -91,10 +93,15 @@ export default {
 
     const deleteCartItem = async () => {
       let index = 0;
+      let filtered;
+
+      console.log(checkList.value);
 
       checkList.value.map(item => {
-        cartsList.value = cartsList.value.filter(cart => cart.item_id !== item);
+        filtered = cartsList.value.filter(cart => cart.item_id !== item);
       });
+
+      cartsList.value = filtered;
 
       for (let i = 0; i < cartsList.value.length; i++) {
         if (i % 3 === 0) {
@@ -106,7 +113,8 @@ export default {
       try {
         const res = await axios.delete('user/my-cart/delete', config);
         console.log(res);
-        checkboxView.value = false;
+        if (res.data.code === 200) router.replace();
+        // checkboxView.value = false;
       } catch (err) {
         console.log(err);
       }

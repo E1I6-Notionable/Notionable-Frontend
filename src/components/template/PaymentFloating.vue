@@ -15,8 +15,8 @@
     <p>{{ templateDesc.title }}</p>
     <div class="template-price">
       <span>{{ templateDesc.price ? `${templateDesc.price}원` : '무료' }}</span>
-      <div class="template-cart">
-        <img @click="addCarts" src="/img/icon/basket.png" />
+      <div @click="addCarts" class="template-cart">
+        <img src="/img/icon/basket.png" />
         <span>장바구니</span>
       </div>
     </div>
